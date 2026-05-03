@@ -10,7 +10,23 @@ const routes: RouteRecordRaw[] = [
       { path: 'catalog', component: () => import('pages/CatalogPage.vue') },
       { path: 'product/:id', component: () => import('pages/ProductPage.vue') },
       { path: 'estimate', component: () => import('pages/EstimatePage.vue') },
-      { path: 'admin/login', component: () => import('pages/AdminLoginPage.vue') },
+    ],
+  },
+
+  {
+    path: '/admin/login',
+    component: () => import('layouts/AuthLayout.vue'),
+    children: [{ path: '', component: () => import('pages/AdminLoginPage.vue') }],
+  },
+  {
+    path: '/admin',
+    component: () => import('layouts/AdminLayout.vue'),
+    meta: { requiresAuth: true },
+    children: [
+      { path: '', component: () => import('pages/AdminDashboardPage.vue') },
+      { path: 'units', component: () => import('pages/AdminUnitsPage.vue') },
+      { path: 'categories', component: () => import('pages/AdminCategoriesPage.vue') },
+      { path: 'products', component: () => import('pages/AdminProductsPage.vue') },
     ],
   },
 
@@ -21,3 +37,5 @@ const routes: RouteRecordRaw[] = [
 ];
 
 export default routes;
+
+

@@ -9,7 +9,7 @@
         <q-btn flat no-caps to="/categories" label="Категории" />
         <q-btn flat no-caps to="/catalog" label="Каталог" />
         <q-btn flat no-caps to="/estimate" label="Смета" />
-        <q-btn flat no-caps to="/admin/login" label="Админ" />
+        <q-btn flat no-caps to="/admin" label="Админ" />
       </q-toolbar>
     </q-header>
 
@@ -25,3 +25,4 @@
     </q-footer>
   </q-layout>
 </template>
+
