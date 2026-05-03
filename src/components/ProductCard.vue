@@ -1,11 +1,6 @@
 ﻿<template>
   <q-card class="full-height">
-    <q-img
-      v-if="imageUrl"
-      :src="imageUrl"
-      :ratio="4/3"
-      spinner-color="primary"
-    />
+    <q-img v-if="imageUrl" :src="imageUrl" :ratio="4 / 3" spinner-color="primary" />
     <div v-else class="bg-grey-2" style="height: 180px" />
 
     <q-card-section class="q-pb-none">
@@ -28,18 +23,22 @@
 
     <q-card-actions align="right">
       <q-btn flat color="primary" :to="`/product/${product.id}`" label="Подробнее" />
+      <q-btn flat color="primary" icon="add" label="В смету" @click="addToEstimate" />
     </q-card-actions>
   </q-card>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { Notify } from 'quasar';
 import type { Product } from 'src/types/api';
 import { useApi } from 'src/api/useApi';
 import { formatPriceRub } from 'src/utils/format';
+import { useEstimateStore } from 'src/stores/estimate';
 
 const props = defineProps<{ product: Product }>();
 const api = useApi();
+const estimate = useEstimateStore();
 
 const imageUrl = computed(() => {
   const first = props.product.images?.[0];
@@ -63,6 +62,11 @@ const stockColor = computed(() => {
   if (inv.status === 'OUT_OF_STOCK') return 'negative';
   return 'warning';
 });
+
+function addToEstimate() {
+  estimate.addProduct(props.product, 1);
+  Notify.create({ type: 'positive', message: 'Добавлено в смету' });
+}
 </script>
 
 <style scoped lang="scss">

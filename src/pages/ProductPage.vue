@@ -23,7 +23,7 @@
           <q-img
             v-if="activeImageUrl"
             :src="activeImageUrl"
-            :ratio="4/3"
+            :ratio="4 / 3"
             spinner-color="primary"
           />
           <div v-else class="bg-grey-2" style="height: 320px" />
@@ -58,8 +58,19 @@
               <div class="text-h6 text-weight-bold">{{ formatPriceRub(product.price) }}</div>
               <q-badge v-if="stockLabel" :color="stockColor" outline>{{ stockLabel }}</q-badge>
             </div>
-            <div class="text-caption text-grey-7 q-mt-xs">
-              Ед. изм.: {{ unitLabel }}
+            <div class="text-caption text-grey-7 q-mt-xs">Ед. изм.: {{ unitLabel }}</div>
+
+            <div class="row items-center q-gutter-sm q-mt-md">
+              <q-input
+                v-model.number="qty"
+                dense
+                outlined
+                type="number"
+                min="1"
+                label="Кол-во"
+                style="max-width: 140px"
+              />
+              <q-btn color="primary" icon="add" label="В смету" @click="addToEstimate" />
             </div>
           </q-card-section>
         </q-card>
@@ -115,22 +126,23 @@
       </div>
     </div>
 
-    <div v-else class="q-pa-md text-grey-7">
-      Товар не найден.
-    </div>
+    <div v-else class="q-pa-md text-grey-7">Товар не найден.</div>
   </q-page>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import { Notify } from 'quasar';
 import { useApi } from 'src/api/useApi';
+import { useEstimateStore } from 'src/stores/estimate';
 import { formatPriceRub } from 'src/utils/format';
 import type { Product } from 'src/types/api';
 import ProductCard from 'src/components/ProductCard.vue';
 
 const route = useRoute();
 const api = useApi();
+const estimate = useEstimateStore();
 
 const loading = ref(false);
 const recoLoading = ref(false);
@@ -139,6 +151,7 @@ const product = ref<Product | null>(null);
 const recommendations = ref<Product[]>([]);
 
 const activeImageIndex = ref(0);
+const qty = ref(1);
 
 const productId = computed(() => {
   const raw = route.params.id;
@@ -185,6 +198,12 @@ const categoryLabel = computed(() => {
   return c?.name ?? String(product.value?.categoryId ?? '—');
 });
 
+function addToEstimate() {
+  if (!product.value) return;
+  estimate.addProduct(product.value, qty.value);
+  Notify.create({ type: 'positive', message: 'Добавлено в смету' });
+}
+
 async function reload() {
   const id = productId.value;
   if (!id) {
@@ -196,6 +215,7 @@ async function reload() {
   try {
     product.value = await api.productById(id);
     activeImageIndex.value = 0;
+    qty.value = 1;
   } finally {
     loading.value = false;
   }
