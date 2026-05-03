@@ -99,31 +99,8 @@ export const useEstimateStore = defineStore('estimate', {
       }
       this.persist();
     },
-    exportJson(): string {
-      return JSON.stringify(
-        {
-          items: this.items,
-          total: this.total,
-          exportedAt: new Date().toISOString(),
-        },
-        null,
-        2,
-      );
-    },
-    importJson(raw: string) {
-      const parsed = JSON.parse(raw) as { items?: unknown };
-      if (!parsed || !Array.isArray(parsed.items)) throw new Error('Некорректный формат JSON');
-      const items = parsed.items as Array<Partial<EstimateItem>>;
-      this.items = items
-        .filter((x) => typeof x.productId === 'number' && typeof x.quantity === 'number')
-        .map((x) => ({
-          productId: x.productId!,
-          name: String(x.name ?? ''),
-          unit: String(x.unit ?? ''),
-          price: Number(x.price ?? 0),
-          quantity: Number(x.quantity ?? 0),
-        }))
-        .filter((x) => x.quantity > 0);
+    setItems(items: EstimateItem[]) {
+      this.items = items;
       this.persist();
     },
   },

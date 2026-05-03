@@ -13,21 +13,24 @@
       <q-markup-table dense>
         <thead>
           <tr>
-            <th class="text-left">Товар</th>
+            <th class="text-left">ID</th>
+            <th class="text-left">Название</th>
+            <th class="text-left">Ед. изм.</th>
             <th class="text-right">Цена</th>
-            <th class="text-right">Кол-во</th>
+            <th class="text-right">Количество</th>
             <th class="text-right">Итого</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="it in store.items" :key="it.productId">
+            <td class="text-left" style="width: 90px">{{ it.productId }}</td>
             <td class="text-left">
               <div class="text-weight-medium">{{ it.name }}</div>
-              <div class="text-caption text-grey-7">{{ it.unit }}</div>
             </td>
-            <td class="text-right">{{ formatPriceRub(it.price) }}</td>
-            <td class="text-right" style="width: 140px">
+            <td class="text-left" style="width: 120px">{{ it.unit }}</td>
+            <td class="text-right" style="width: 140px">{{ formatPriceRub(it.price) }}</td>
+            <td class="text-right" style="width: 160px">
               <q-input
                 dense
                 outlined
@@ -37,7 +40,7 @@
                 @update:model-value="(v) => store.setQuantity(it.productId, Number(v))"
               />
             </td>
-            <td class="text-right">{{ formatPriceRub(it.price * it.quantity) }}</td>
+            <td class="text-right" style="width: 160px">{{ formatPriceRub(it.price * it.quantity) }}</td>
             <td class="text-right" style="width: 56px">
               <q-btn flat dense round icon="delete" color="negative" @click="store.remove(it.productId)" />
             </td>
@@ -45,60 +48,118 @@
         </tbody>
       </q-markup-table>
 
+      <div class="q-pa-md text-right text-subtitle1 text-weight-bold">
+        Общая сумма: {{ formatPriceRub(store.total) }}
+      </div>
+
       <q-separator />
 
       <q-card-section class="row items-center justify-between">
-        <div class="text-subtitle1 text-weight-bold">Итого: {{ formatPriceRub(store.total) }}</div>
+        <div class="text-caption text-grey-7">Экспорт/импорт</div>
         <div class="row q-gutter-sm">
           <q-btn flat color="negative" icon="delete_sweep" label="Очистить" @click="store.clear" />
-          <q-btn color="primary" icon="download" label="Экспорт JSON" @click="exportJson" />
-          <q-btn outline color="primary" icon="upload" label="Импорт JSON" @click="importDialog = true" />
+          <q-btn color="primary" icon="download" label="Экспорт XLSX" @click="exportXlsx" />
+          <q-btn outline color="primary" icon="upload" label="Импорт XLSX" @click="pickFile" />
+          <input ref="fileInput" type="file" accept=".xlsx" class="hidden" @change="onFile" />
         </div>
       </q-card-section>
     </q-card>
-
-    <q-dialog v-model="importDialog">
-      <q-card style="width: 720px; max-width: 95vw">
-        <q-card-section>
-          <div class="text-h6">Импорт сметы (JSON)</div>
-        </q-card-section>
-        <q-card-section>
-          <q-input v-model="importText" type="textarea" autogrow outlined placeholder="Вставь JSON" />
-        </q-card-section>
-        <q-card-actions align="right">
-          <q-btn flat label="Отмена" v-close-popup />
-          <q-btn color="primary" label="Импортировать" @click="doImport" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
   </q-page>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Notify } from 'quasar';
+import * as XLSX from 'xlsx';
 import { useEstimateStore } from 'src/stores/estimate';
 import { formatPriceRub } from 'src/utils/format';
+import type { EstimateItem } from 'src/stores/estimate';
 
 const store = useEstimateStore();
+const fileInput = ref<HTMLInputElement | null>(null);
 
-const importDialog = ref(false);
-const importText = ref('');
-
-async function exportJson() {
-  const json = store.exportJson();
-  await navigator.clipboard.writeText(json);
-  Notify.create({ type: 'positive', message: 'JSON сметы скопирован в буфер обмена' });
+function downloadBlob(filename: string, blob: Blob) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }
 
-function doImport() {
+function exportXlsx() {
+  const header = ['ID', 'Название', 'Ед. изм.', 'Цена', 'Количество', 'Итого'];
+  const rows = store.items.map((it) => [
+    it.productId,
+    it.name,
+    it.unit,
+    it.price,
+    it.quantity,
+    it.price * it.quantity,
+  ]);
+
+  const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Estimate');
+
+  const summary = XLSX.utils.aoa_to_sheet([
+    ['exportedAt', new Date().toISOString()],
+    ['total', store.total],
+  ]);
+  XLSX.utils.book_append_sheet(wb, summary, 'Summary');
+
+  const out = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
+  const blob = new Blob([out], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+
+  const name = `vodoley-estimate-${new Date().toISOString().slice(0, 10)}.xlsx`;
+  downloadBlob(name, blob);
+  Notify.create({ type: 'positive', message: 'Файл XLSX скачан' });
+}
+
+function pickFile() {
+  fileInput.value?.click();
+}
+
+async function onFile(e: Event) {
+  const input = e.target as HTMLInputElement;
+  const file = input.files?.[0] ?? null;
+  input.value = '';
+  if (!file) return;
+
   try {
-    store.importJson(importText.value);
-    Notify.create({ type: 'positive', message: 'Смета импортирована' });
-    importDialog.value = false;
-    importText.value = '';
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : 'Ошибка импорта';
+    const buf = await file.arrayBuffer();
+    const wb = XLSX.read(buf, { type: 'array' });
+    const sheetName = wb.SheetNames.find((n) => n.toLowerCase() === 'estimate') ?? wb.SheetNames[0];
+    if (!sheetName) throw new Error('В файле нет листов');
+    const ws = wb.Sheets[sheetName];
+    if (!ws) throw new Error('Лист не найден');
+
+    const raw = XLSX.utils.sheet_to_json<Record<string, unknown>>(ws, { defval: '' });
+
+    const items: EstimateItem[] = raw
+      .map((r) => ({
+        productId: Number(r.ID ?? r.productId),
+        name:
+          typeof (r['Название'] ?? r.name) === 'string' ? ((r['Название'] ?? r.name) as string) : '',
+        unit:
+          typeof (r['Ед. изм.'] ?? r.unit) === 'string'
+            ? ((r['Ед. изм.'] ?? r.unit) as string)
+            : '',
+        price: Number(r['Цена'] ?? r.price),
+        quantity: Number(r['Количество'] ?? r.quantity),
+      }))
+      .filter((x) => Number.isFinite(x.productId) && Number.isFinite(x.price) && Number.isFinite(x.quantity))
+      .filter((x) => x.productId > 0 && x.quantity > 0);
+
+    store.setItems(items);
+    Notify.create({ type: 'positive', message: `Импортировано позиций: ${items.length}` });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Ошибка импорта XLSX';
     Notify.create({ type: 'negative', message: msg });
   }
 }
