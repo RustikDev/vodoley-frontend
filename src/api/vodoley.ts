@@ -41,7 +41,7 @@ export function createVodoleyApi(axios: AxiosInstance) {
 
     // Public
     async categoriesTree() {
-      const { data } = await axios.get<CategoryNode[]>('/categories/tree');
+      const { data } = await axios.get<CategoryNode[]>('/categories');
       return data;
     },
 
@@ -199,4 +199,7 @@ export function createVodoleyApi(axios: AxiosInstance) {
     },
   };
 }
+
+export type VodoleyApi = ReturnType<typeof createVodoleyApi>;
+
 
