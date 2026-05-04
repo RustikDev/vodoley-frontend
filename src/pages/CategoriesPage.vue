@@ -1,5 +1,5 @@
 ﻿<template>
-  <q-page class="q-pa-md">
+  <q-page class="q-pa-md vds-container">
     <div class="row items-start q-col-gutter-md">
       <div class="col-12 col-md-4">
         <div class="row items-center justify-between q-mb-sm">
@@ -13,7 +13,14 @@
           />
         </div>
 
-        <q-skeleton v-if="store.categoriesLoading" type="rect" height="220px" />
+        <VdsErrorState
+          v-if="store.categoriesError"
+          title="Ошибка загрузки категорий"
+          :description="store.categoriesError"
+          :on-retry="reload"
+        />
+
+        <q-skeleton v-else-if="store.categoriesLoading" type="rect" height="220px" />
 
         <CategoryTree
           v-else
@@ -45,6 +52,7 @@
 import { computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import CategoryTree from 'src/components/CategoryTree.vue';
+import VdsErrorState from 'src/components/VdsErrorState.vue';
 import { useCatalogStore } from 'src/stores/catalog';
 import { useApi } from 'src/api/useApi';
 
@@ -74,4 +82,6 @@ onMounted(async () => {
   if (store.categories.length === 0) await store.fetchCategories(api);
 });
 </script>
+
+
 

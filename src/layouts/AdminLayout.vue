@@ -1,6 +1,6 @@
 ﻿<template>
   <q-layout view="hHh lpR fFf">
-    <q-header elevated>
+    <q-header elevated class="vds-header">
       <q-toolbar class="q-px-md">
         <q-toolbar-title class="text-weight-bold">Админка</q-toolbar-title>
 
@@ -50,3 +50,4 @@ function onLogout() {
   void router.push('/admin/login');
 }
 </script>
+

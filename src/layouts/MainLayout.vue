@@ -1,9 +1,9 @@
 ﻿<template>
   <q-layout view="hHh lpR fFf">
-    <q-header elevated>
+    <q-header elevated class="vds-header">
       <q-toolbar class="q-px-md">
         <q-toolbar-title class="text-weight-bold">
-          <router-link class="text-white" style="text-decoration: none" to="/">Водолей</router-link>
+          <router-link class="text-white" style="text-decoration: none" to="/">Водолей • Строймаркет</router-link>
         </q-toolbar-title>
 
         <q-btn flat no-caps to="/categories" label="Категории" />
@@ -25,4 +25,5 @@
     </q-footer>
   </q-layout>
 </template>
+
 

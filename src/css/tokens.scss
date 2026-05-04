@@ -1,0 +1,59 @@
+﻿/*
+  Vodoley Design System (VDS) — Construction shop theme
+  ------------------------------------------------------------
+  Palette inspired by industrial/construction UI:
+  - Primary: deep blue (trust)
+  - Accent: safety orange (CTA)
+  - Surfaces: light neutral
+*/
+
+:root {
+  /* Colors */
+  --vds-color-primary: #1e40af; /* blue-800 */
+  --vds-color-secondary: #0f766e; /* teal-700 */
+  --vds-color-accent: #f59e0b; /* amber-500 */
+
+  --vds-color-bg: #f8fafc; /* slate-50 */
+  --vds-color-surface: #ffffff;
+  --vds-color-text: #0f172a; /* slate-900 */
+  --vds-color-text-muted: #64748b; /* slate-500 */
+  --vds-color-border: rgba(15, 23, 42, 0.12);
+
+  --vds-color-positive: #16a34a;
+  --vds-color-negative: #dc2626;
+  --vds-color-warning: #f59e0b;
+  --vds-color-info: #0284c7;
+
+  /* Spacing (4px scale) */
+  --vds-space-0: 0;
+  --vds-space-1: 4px;
+  --vds-space-2: 8px;
+  --vds-space-3: 12px;
+  --vds-space-4: 16px;
+  --vds-space-5: 20px;
+  --vds-space-6: 24px;
+  --vds-space-8: 32px;
+  --vds-space-10: 40px;
+  --vds-space-12: 48px;
+
+  /* Radius */
+  --vds-radius-xs: 8px;
+  --vds-radius-sm: 12px;
+  --vds-radius-md: 16px;
+
+  /* Shadows */
+  --vds-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.10);
+  --vds-shadow-md: 0 12px 28px rgba(15, 23, 42, 0.14);
+
+  /* Layout */
+  --vds-container: 1200px;
+}
+
+/* Dark theme (optional future) */
+body.body--dark {
+  --vds-color-bg: #0b1020;
+  --vds-color-surface: #0f172a;
+  --vds-color-text: #e5e7eb;
+  --vds-color-text-muted: #9ca3af;
+  --vds-color-border: rgba(229, 231, 235, 0.14);
+}

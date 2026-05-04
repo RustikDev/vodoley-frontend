@@ -1,5 +1,5 @@
 ﻿<template>
-  <q-page class="q-pa-md">
+  <q-page class="q-pa-md vds-container">
     <div class="row items-center justify-between q-mb-md">
       <div class="text-h6">Единицы измерения</div>
       <div class="row q-gutter-sm">
@@ -8,6 +8,12 @@
       </div>
     </div>
 
+    <VdsErrorState
+      v-if="error"
+      title="Ошибка"
+      :description="error"
+      :on-retry="reload"
+    />
     <q-table
       flat
       bordered
@@ -24,7 +30,7 @@
         </q-td>
       </template>
       <template #no-data>
-        <div class="q-pa-md text-grey-7">Нет данных</div>
+        <VdsEmptyState icon="inbox" title="Нет данных" description="Попробуй обновить или создать запись" />
       </template>
     </q-table>
 
@@ -51,6 +57,8 @@
 </template>
 
 <script setup lang="ts">
+import VdsEmptyState from 'src/components/VdsEmptyState.vue';
+import VdsErrorState from 'src/components/VdsErrorState.vue';
 import { onMounted, reactive, ref } from 'vue';
 import { Dialog, Notify } from 'quasar';
 import { useApi } from 'src/api/useApi';
@@ -60,6 +68,7 @@ import type { Unit } from 'src/types/api';
 const api = useApi();
 
 const loading = ref(false);
+const error = ref<string | null>(null);
 const saving = ref(false);
 const rows = ref<Unit[]>([]);
 
@@ -82,9 +91,13 @@ const form = reactive({
 });
 
 async function reload() {
+  error.value = null;
   loading.value = true;
   try {
     rows.value = await api.adminUnitsList();
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Ошибка загрузки';
+    throw e;
   } finally {
     loading.value = false;
   }
@@ -133,6 +146,9 @@ async function save() {
     dialogOpen.value = false;
     await reload();
     Notify.create({ type: 'positive', message: 'Сохранено' });
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Ошибка загрузки';
+    throw e;
   } finally {
     saving.value = false;
   }
@@ -157,6 +173,11 @@ onMounted(() => {
   void reload();
 });
 </script>
+
+
+
+
+
 
 
 

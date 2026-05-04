@@ -2,7 +2,11 @@
 import { Notify } from 'quasar';
 import { getApiErrorMessage } from 'src/utils/apiError';
 
-export function createApiClient(opts: { baseURL: string; getToken?: () => string | null }): AxiosInstance {
+export function createApiClient(opts: {
+  baseURL: string;
+  getToken?: () => string | null;
+  onUnauthorized?: () => void;
+}): AxiosInstance {
   const instance = axios.create({
     baseURL: opts.baseURL,
     withCredentials: true,
@@ -20,6 +24,10 @@ export function createApiClient(opts: { baseURL: string; getToken?: () => string
   instance.interceptors.response.use(
     (res) => res,
     (error: unknown) => {
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      if (status === 401) {
+        opts.onUnauthorized?.();
+      }
       Notify.create({
         type: 'negative',
         message: getApiErrorMessage(error),
@@ -33,3 +41,5 @@ export function createApiClient(opts: { baseURL: string; getToken?: () => string
 
   return instance;
 }
+
+

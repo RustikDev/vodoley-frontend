@@ -1,25 +1,35 @@
-// Quasar Sass (& SCSS) Variables
+﻿// Quasar Sass (& SCSS) Variables
 // --------------------------------------------------
-// To customize the look and feel of this app, you can override
-// the Sass/SCSS variables found in Quasar's source Sass/SCSS files.
+// VDS Theme tokens (single source of truth for branding colors)
 
-// Check documentation for full list of Quasar variables
+$vds-primary: #1e40af;
+$vds-secondary: #0f766e;
+$vds-accent: #f59e0b;
 
-// Your own variables (that are declared here) and Quasar's own
-// ones will be available out of the box in your .vue/.scss/.sass files
+$vds-dark: #0b1020;
+$vds-dark-page: #0b1020;
 
-// It's highly recommended to change the default colors
-// to match your app's branding.
-// Tip: Use the "Theme Builder" on Quasar's documentation website.
+$vds-positive: #16a34a;
+$vds-negative: #dc2626;
+$vds-info: #0284c7;
+$vds-warning: #f59e0b;
 
-$primary: #1976d2;
-$secondary: #26a69a;
-$accent: #9c27b0;
+$primary: $vds-primary;
+$secondary: $vds-secondary;
+$accent: $vds-accent;
 
-$dark: #1d1d1d;
-$dark-page: #121212;
+$dark: $vds-dark;
+$dark-page: $vds-dark-page;
 
-$positive: #21ba45;
-$negative: #c10015;
-$info: #31ccec;
-$warning: #f2c037;
+$positive: $vds-positive;
+$negative: $vds-negative;
+$info: $vds-info;
+$warning: $vds-warning;
+
+// Common UI
+$generic-border-radius: 16px;
+$button-border-radius: 14px;
+$input-border-radius: 14px;
+
+// Buttons a bit bolder for shop CTA
+$button-padding: 10px 16px;

@@ -1,5 +1,5 @@
 ﻿<template>
-  <q-page class="q-pa-md">
+  <q-page class="q-pa-md vds-container">
     <div class="row items-center justify-between q-mb-md">
       <div class="text-h5">Смета</div>
       <div class="text-body2 text-grey-7">Позиций: {{ store.items.length }}, шт: {{ store.count }}</div>
@@ -164,3 +164,4 @@ async function onFile(e: Event) {
   }
 }
 </script>
+

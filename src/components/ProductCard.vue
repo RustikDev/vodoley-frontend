@@ -1,5 +1,5 @@
 ﻿<template>
-  <q-card class="full-height">
+  <q-card class="full-height vds-card">
     <q-img v-if="imageUrl" :src="imageUrl" :ratio="4 / 3" spinner-color="primary" />
     <div v-else class="bg-grey-2" style="height: 180px" />
 
@@ -77,3 +77,4 @@ function addToEstimate() {
   overflow: hidden;
 }
 </style>
+

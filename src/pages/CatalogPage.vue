@@ -1,5 +1,5 @@
 ﻿<template>
-  <q-page class="q-pa-md">
+  <q-page class="q-pa-md vds-container">
     <div class="row items-center q-col-gutter-md q-mb-md">
       <div class="col-12 col-md-4">
         <q-input
@@ -49,7 +49,13 @@
     <div class="row items-start q-col-gutter-md">
       <div class="col-12 col-md-3">
         <div class="text-subtitle2 q-mb-sm">Категории</div>
-        <q-skeleton v-if="store.categoriesLoading" type="rect" height="260px" />
+        <VdsErrorState
+          v-if="store.categoriesError"
+          title="Ошибка категорий"
+          :description="store.categoriesError"
+          :on-retry="() => store.fetchCategories(api)"
+        />
+        <q-skeleton v-else-if="store.categoriesLoading" type="rect" height="260px" />
         <CategoryTree
           v-else
           :nodes="store.categories"
@@ -66,7 +72,14 @@
           </div>
         </div>
 
-        <div v-if="store.productsLoading" class="row q-col-gutter-md">
+        <VdsErrorState
+          v-if="store.productsError"
+          title="Ошибка загрузки каталога"
+          :description="store.productsError"
+          :on-retry="fetchFromRoute"
+        />
+
+        <div v-else-if="store.productsLoading" class="row q-col-gutter-md">
           <div v-for="i in 6" :key="i" class="col-12 col-sm-6 col-lg-4">
             <q-card>
               <q-skeleton height="180px" square />
@@ -79,9 +92,12 @@
         </div>
 
         <template v-else>
-          <div v-if="(store.products?.items?.length ?? 0) === 0" class="q-pa-md text-grey-7">
-            Ничего не найдено.
-          </div>
+          <VdsEmptyState
+            v-if="(store.products?.items?.length ?? 0) === 0"
+            icon="search_off"
+            title="Ничего не найдено"
+            description="Попробуй изменить фильтры или очистить поиск"
+          />
 
           <div v-else class="row q-col-gutter-md">
             <div v-for="p in store.products?.items" :key="p.id" class="col-12 col-sm-6 col-lg-4">
@@ -109,8 +125,11 @@ import { computed, onMounted, reactive, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import CategoryTree from 'src/components/CategoryTree.vue';
 import ProductCard from 'src/components/ProductCard.vue';
+import VdsEmptyState from 'src/components/VdsEmptyState.vue';
+import VdsErrorState from 'src/components/VdsErrorState.vue';
 import { useApi } from 'src/api/useApi';
 import { useCatalogStore } from 'src/stores/catalog';
+import { debounce } from 'src/utils/debounce';
 import type { ProductListQuery, ProductSort } from 'src/types/api';
 
 const api = useApi();
@@ -134,6 +153,10 @@ function readNumber(v: unknown): number | null {
 function readBool(v: unknown): boolean {
   const raw = Array.isArray(v) ? v[0] : v;
   return raw === 'true' || raw === '1' || raw === true;
+}
+function readSort(v: unknown): ProductSort {
+  const raw = Array.isArray(v) ? v[0] : v;
+  return raw === 'price_asc' || raw === 'price_desc' || raw === 'newest' ? raw : 'newest';
 }
 
 type UiState = {
@@ -201,16 +224,11 @@ function buildApiQuery(): ProductListQuery {
   return query;
 }
 
-let debounceTimer: number | null = null;
 let applyingRoute = false;
 
-function scheduleRouteSync() {
-  if (applyingRoute) return;
-  if (debounceTimer) window.clearTimeout(debounceTimer);
-  debounceTimer = window.setTimeout(() => {
-    void router.replace({ path: '/catalog', query: buildRouteQuery() });
-  }, 350);
-}
+const scheduleRouteSync = debounce(() => {
+  void router.replace({ path: '/catalog', query: buildRouteQuery() });
+}, 350);
 
 function applyRoute() {
   applyingRoute = true;
@@ -222,7 +240,7 @@ function applyRoute() {
     ui.minPrice = readNumber(route.query.minPrice);
     ui.maxPrice = readNumber(route.query.maxPrice);
     ui.inStock = readBool(route.query.inStock);
-    ui.sort = 'newest';
+    ui.sort = readSort(route.query.sort);
     ui.page = readNumber(route.query.page) ?? 1;
     ui.pageSize = readNumber(route.query.pageSize) ?? 12;
 
@@ -244,7 +262,7 @@ function reset() {
   ui.minPrice = null;
   ui.maxPrice = null;
   ui.inStock = false;
-  ui.sort = 'newest';
+  ui.sort = readSort(route.query.sort);
   ui.page = 1;
   ui.pageSize = 12;
 }
@@ -282,6 +300,9 @@ onMounted(async () => {
   if (store.categories.length === 0) await store.fetchCategories(api);
 });
 </script>
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 ﻿<template>
-  <q-page class="q-pa-md" style="max-width: 420px; margin: 0 auto">
+  <q-page class="q-pa-md vds-container" style="max-width: 420px; margin: 0 auto">
     <div class="text-h5 q-mb-md">Вход в админку</div>
 
     <q-form @submit.prevent="onSubmit" class="q-gutter-md">
@@ -43,3 +43,4 @@ async function onSubmit() {
   }
 }
 </script>
+

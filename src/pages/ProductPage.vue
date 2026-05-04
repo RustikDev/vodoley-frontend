@@ -1,5 +1,5 @@
 ﻿<template>
-  <q-page class="q-pa-md">
+  <q-page class="q-pa-md vds-container">
     <q-breadcrumbs class="q-mb-md" active-color="primary">
       <q-breadcrumbs-el label="Каталог" to="/catalog" />
       <q-breadcrumbs-el :label="product?.name ?? 'Товар'" />
@@ -19,7 +19,7 @@
 
     <div v-else-if="product" class="row items-start q-col-gutter-md">
       <div class="col-12 col-md-5">
-        <q-card flat bordered>
+        <q-card flat bordered class="vds-card">
           <q-img
             v-if="activeImageUrl"
             :src="activeImageUrl"
@@ -52,7 +52,7 @@
           {{ product.description }}
         </div>
 
-        <q-card flat bordered class="q-mb-md">
+        <q-card flat bordered class="q-mb-md vds-card">
           <q-card-section>
             <div class="row items-center justify-between">
               <div class="text-h6 text-weight-bold">{{ formatPriceRub(product.price) }}</div>
@@ -75,7 +75,7 @@
           </q-card-section>
         </q-card>
 
-        <q-card flat bordered>
+        <q-card flat bordered class="vds-card">
           <q-card-section>
             <div class="text-subtitle2 q-mb-sm">Характеристики</div>
             <q-list dense>
@@ -261,3 +261,5 @@ onMounted(async () => {
   outline-offset: 2px;
 }
 </style>
+
+
