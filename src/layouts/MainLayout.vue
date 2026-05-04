@@ -26,6 +26,7 @@
 
           <q-btn flat no-caps to="/categories" label="Категории" />
           <q-btn flat no-caps to="/catalog" label="Каталог" />
+          <q-btn flat no-caps to="/about" label="О нас" />
 
           <q-btn flat no-caps to="/estimate" label="Смета">
             <q-badge v-if="estimate.count" color="amber-5" text-color="black" floating>
@@ -33,7 +34,7 @@
             </q-badge>
           </q-btn>
 
-          <q-btn flat no-caps to="/admin" label="Админ" />
+          <q-btn v-if="auth.token" flat no-caps to="/admin" label="Админ" />
         </q-toolbar>
       </div>
     </q-header>
@@ -55,10 +56,12 @@
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useEstimateStore } from 'src/stores/estimate';
+import { useAuthStore } from 'src/stores/auth';
 
 const route = useRoute();
 const router = useRouter();
 const estimate = useEstimateStore();
+const auth = useAuthStore();
 
 const search = computed({
   get() {
@@ -82,4 +85,6 @@ function applySearch() {
   void router.push({ path: '/catalog', query });
 }
 </script>
+
+
 

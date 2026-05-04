@@ -10,6 +10,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'catalog', component: () => import('pages/CatalogPage.vue') },
       { path: 'product/:id', component: () => import('pages/ProductPage.vue') },
       { path: 'estimate', component: () => import('pages/EstimatePage.vue') },
+      { path: 'about', component: () => import('pages/AboutPage.vue') },
     ],
   },
 
@@ -37,5 +38,6 @@ const routes: RouteRecordRaw[] = [
 ];
 
 export default routes;
+
 
 
