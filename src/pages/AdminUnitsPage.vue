@@ -1,6 +1,165 @@
 ﻿<template>
   <q-page class="q-pa-md">
-    <div class="text-h6">Единицы измерения</div>
-    <div class="text-body2 text-grey-7">Скоро: таблица + формы CRUD.</div>
+    <div class="row items-center justify-between q-mb-md">
+      <div class="text-h6">Единицы измерения</div>
+      <div class="row q-gutter-sm">
+        <q-btn outline icon="refresh" label="Обновить" :loading="loading" @click="reload" />
+        <q-btn color="primary" icon="add" label="Создать" @click="openCreate" />
+      </div>
+    </div>
+
+    <q-table
+      flat
+      bordered
+      row-key="id"
+      :rows="rows"
+      :columns="columns"
+      :loading="loading"
+      :pagination="{ rowsPerPage: 20 }"
+    >
+      <template #body-cell-actions="p">
+        <q-td :props="p" class="text-right">
+          <q-btn flat dense icon="edit" @click="openEdit(p.row)" />
+          <q-btn flat dense icon="delete" color="negative" @click="confirmDelete(p.row)" />
+        </q-td>
+      </template>
+      <template #no-data>
+        <div class="q-pa-md text-grey-7">Нет данных</div>
+      </template>
+    </q-table>
+
+    <q-dialog v-model="dialogOpen">
+      <q-card style="width: 560px; max-width: 95vw">
+        <q-card-section>
+          <div class="text-h6">{{ form.id ? 'Редактирование' : 'Создание' }}</div>
+        </q-card-section>
+
+        <q-card-section class="q-gutter-md">
+          <q-input v-model.trim="form.name" outlined label="Название" />
+          <q-input v-model.trim="form.shortName" outlined label="Короткое" />
+          <q-toggle v-model="form.isActive" label="Активна" />
+          <q-input v-model.number="form.sortOrder" outlined type="number" label="Порядок" />
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Отмена" v-close-popup />
+          <q-btn color="primary" label="Сохранить" :loading="saving" @click="save" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
+
+<script setup lang="ts">
+import { onMounted, reactive, ref } from 'vue';
+import { Dialog, Notify } from 'quasar';
+import { useApi } from 'src/api/useApi';
+import type { QTableColumn } from 'quasar';
+import type { Unit } from 'src/types/api';
+
+const api = useApi();
+
+const loading = ref(false);
+const saving = ref(false);
+const rows = ref<Unit[]>([]);
+
+const columns: QTableColumn[] = [
+  { name: 'id', label: 'ID', field: 'id', align: 'left', sortable: true },
+  { name: 'name', label: 'Название', field: 'name', align: 'left', sortable: true },
+  { name: 'shortName', label: 'Короткое', field: 'shortName', align: 'left' },
+  { name: 'isActive', label: 'Активна', field: 'isActive', align: 'left' },
+  { name: 'sortOrder', label: 'Порядок', field: 'sortOrder', align: 'left', sortable: true },
+  { name: 'actions', label: '', field: 'actions', align: 'right' },
+];
+
+const dialogOpen = ref(false);
+const form = reactive({
+  id: null as number | null,
+  name: '',
+  shortName: '',
+  isActive: true,
+  sortOrder: 0,
+});
+
+async function reload() {
+  loading.value = true;
+  try {
+    rows.value = await api.adminUnitsList();
+  } finally {
+    loading.value = false;
+  }
+}
+
+function openCreate() {
+  form.id = null;
+  form.name = '';
+  form.shortName = '';
+  form.isActive = true;
+  form.sortOrder = 0;
+  dialogOpen.value = true;
+}
+
+function openEdit(u: Unit) {
+  form.id = u.id;
+  form.name = u.name;
+  form.shortName = u.shortName;
+  form.isActive = u.isActive;
+  form.sortOrder = u.sortOrder;
+  dialogOpen.value = true;
+}
+
+async function save() {
+  if (!form.name.trim() || !form.shortName.trim()) {
+    Notify.create({ type: 'warning', message: 'Заполни название и короткое имя' });
+    return;
+  }
+
+  saving.value = true;
+  try {
+    if (form.id) {
+      await api.adminUpdateUnit(form.id, {
+        name: form.name,
+        shortName: form.shortName,
+        isActive: form.isActive,
+      });
+    } else {
+      await api.adminCreateUnit({
+        name: form.name,
+        shortName: form.shortName,
+        isActive: form.isActive,
+      });
+    }
+
+    dialogOpen.value = false;
+    await reload();
+    Notify.create({ type: 'positive', message: 'Сохранено' });
+  } finally {
+    saving.value = false;
+  }
+}
+
+function confirmDelete(u: Unit) {
+  Dialog.create({
+    title: 'Удалить?',
+    message: `Удалить «${u.name}»?`,
+    cancel: true,
+    persistent: true,
+  }).onOk(() => {
+    void (async () => {
+      await api.adminDeleteUnit(u.id);
+      await reload();
+      Notify.create({ type: 'positive', message: 'Удалено' });
+    })();
+  });
+}
+
+onMounted(() => {
+  void reload();
+});
+</script>
+
+
+
+
+
+
