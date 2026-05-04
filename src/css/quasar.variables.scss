@@ -1,10 +1,9 @@
 ﻿// Quasar Sass (& SCSS) Variables
 // --------------------------------------------------
-// VDS Theme tokens (single source of truth for branding colors)
 
-$vds-primary: #1e40af;
-$vds-secondary: #0f766e;
-$vds-accent: #f59e0b;
+$vds-primary: #0b5cff;
+$vds-secondary: #094ad0;
+$vds-accent: #1a73e8;
 
 $vds-dark: #0b1020;
 $vds-dark-page: #0b1020;
@@ -26,10 +25,8 @@ $negative: $vds-negative;
 $info: $vds-info;
 $warning: $vds-warning;
 
-// Common UI
-$generic-border-radius: 16px;
-$button-border-radius: 14px;
-$input-border-radius: 14px;
+$generic-border-radius: 18px;
+$button-border-radius: 16px;
+$input-border-radius: 16px;
 
-// Buttons a bit bolder for shop CTA
 $button-padding: 10px 16px;

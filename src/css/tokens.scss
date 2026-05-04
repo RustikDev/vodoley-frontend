@@ -1,24 +1,23 @@
 ﻿/*
-  Vodoley Design System (VDS) — Construction shop theme
+  Vodoley Design System (VDS) — "vseinstrumenti"-like layout in blue
   ------------------------------------------------------------
-  Palette inspired by industrial/construction UI:
-  - Primary: deep blue (trust)
-  - Accent: safety orange (CTA)
-  - Surfaces: light neutral
+  Goal: clean ecommerce UI, big search, clear CTA, lots of white space.
 */
 
 :root {
-  /* Colors */
-  --vds-color-primary: #1e40af; /* blue-800 */
-  --vds-color-secondary: #0f766e; /* teal-700 */
-  --vds-color-accent: #f59e0b; /* amber-500 */
+  /* Brand */
+  --vds-color-primary: #0b5cff; /* strong blue */
+  --vds-color-primary-2: #094ad0; /* darker */
+  --vds-color-accent: #1a73e8; /* secondary blue */
 
-  --vds-color-bg: #f8fafc; /* slate-50 */
+  /* Surfaces */
+  --vds-color-bg: #f5f7fb;
   --vds-color-surface: #ffffff;
-  --vds-color-text: #0f172a; /* slate-900 */
-  --vds-color-text-muted: #64748b; /* slate-500 */
-  --vds-color-border: rgba(15, 23, 42, 0.12);
+  --vds-color-text: #0b1220;
+  --vds-color-text-muted: #5b6b84;
+  --vds-color-border: rgba(11, 18, 32, 0.12);
 
+  /* Status */
   --vds-color-positive: #16a34a;
   --vds-color-negative: #dc2626;
   --vds-color-warning: #f59e0b;
@@ -37,19 +36,19 @@
   --vds-space-12: 48px;
 
   /* Radius */
-  --vds-radius-xs: 8px;
-  --vds-radius-sm: 12px;
-  --vds-radius-md: 16px;
+  --vds-radius-xs: 10px;
+  --vds-radius-sm: 14px;
+  --vds-radius-md: 18px;
 
   /* Shadows */
-  --vds-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.10);
-  --vds-shadow-md: 0 12px 28px rgba(15, 23, 42, 0.14);
+  --vds-shadow-sm: 0 1px 2px rgba(11, 18, 32, 0.08);
+  --vds-shadow-md: 0 14px 30px rgba(11, 18, 32, 0.14);
 
   /* Layout */
   --vds-container: 1200px;
+  --vds-header-height: 64px;
 }
 
-/* Dark theme (optional future) */
 body.body--dark {
   --vds-color-bg: #0b1020;
   --vds-color-surface: #0f172a;

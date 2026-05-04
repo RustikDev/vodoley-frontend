@@ -1,16 +1,10 @@
 ﻿@use './tokens.scss';
 
-/* Global app styles */
-
 html,
 body,
 #q-app {
   background: var(--vds-color-bg);
   color: var(--vds-color-text);
-}
-
-body {
-  font-feature-settings: "ss01" on;
 }
 
 a {
@@ -35,17 +29,53 @@ a {
   color: var(--vds-color-text-muted);
 }
 
-/* Header tweaks */
+/* Header (ecommerce-style, sticky, big search) */
 .vds-header {
-  background: linear-gradient(135deg, var(--vds-color-primary), #0b3a8a);
-}
-
-.vds-header a,
-.vds-header .q-btn {
+  background: linear-gradient(135deg, var(--vds-color-primary), var(--vds-color-primary-2));
   color: #fff;
 }
 
-/* Make tables look cleaner */
+.vds-header__inner {
+  height: var(--vds-header-height);
+}
+
+.vds-logo {
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.vds-search {
+  width: min(720px, 100%);
+}
+
+.vds-search .q-field__control {
+  border-radius: 999px;
+}
+
+.vds-search .q-field__control,
+.vds-search .q-field__native,
+.vds-search .q-field__marginal {
+  color: #fff;
+}
+
+.vds-search.q-field--outlined .q-field__control:before {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.vds-search.q-field--outlined.q-field--focused .q-field__control:before {
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.vds-search input::placeholder {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* Improve table containers */
 .q-table__container {
   border-radius: var(--vds-radius-md);
+}
+
+/* Slightly denser buttons in header */
+.vds-header .q-btn {
+  color: #fff;
 }

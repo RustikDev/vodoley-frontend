@@ -13,15 +13,15 @@
       </div>
 
       <div class="col-12 col-md-2">
-        <q-input v-model.number="ui.minPrice" dense outlined type="number" label="Цена от" />
+        <q-input dense outlined type="number" label="Цена от" :model-value="ui.minPrice" @update:model-value="(v) => (ui.minPrice = normalizeNumberInput(v))" />
       </div>
 
       <div class="col-12 col-md-2">
-        <q-input v-model.number="ui.maxPrice" dense outlined type="number" label="Цена до" />
+        <q-input dense outlined type="number" label="Цена до" :model-value="ui.maxPrice" @update:model-value="(v) => (ui.maxPrice = normalizeNumberInput(v))" />
       </div>
 
       <div class="col-12 col-md-2">
-        <q-input v-model.number="ui.unitId" dense outlined type="number" label="Ед. изм. (unitId)" />
+        <q-input dense outlined type="number" label="Ед. изм. (unitId)" :model-value="ui.unitId" @update:model-value="(v) => (ui.unitId = normalizeNumberInput(v))" />
       </div>
 
       <div class="col-12 col-md-2">
@@ -150,6 +150,11 @@ function readNumber(v: unknown): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+function normalizeNumberInput(v: unknown): number | null {
+  if (v == null || v === '') return null;
+  const n = typeof v === 'number' ? v : typeof v === 'string' ? Number(v.replace(',', '.')) : null;
+  return Number.isFinite(n) ? n : null;
+}
 function readBool(v: unknown): boolean {
   const raw = Array.isArray(v) ? v[0] : v;
   return raw === 'true' || raw === '1' || raw === true;
@@ -300,6 +305,8 @@ onMounted(async () => {
   if (store.categories.length === 0) await store.fetchCategories(api);
 });
 </script>
+
+
 
 
 
