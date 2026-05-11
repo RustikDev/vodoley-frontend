@@ -161,11 +161,11 @@ const productId = computed(() => {
 });
 
 const imageUrls = computed(() => {
-  const imgs = product.value?.images ?? [];
+  const imgs = [...(product.value?.images ?? [])];
+  imgs.sort((a, b) => (b.isMain ? 1 : 0) - (a.isMain ? 1 : 0) || a.sortOrder - b.sortOrder);
   return imgs
-    .map((i) => i.url)
-    .filter((u): u is string => typeof u === 'string' && u.length > 0)
-    .map((u) => (u.startsWith('http') ? u : api.toAbsoluteUploadUrl(u)));
+    .filter((i) => i.url)
+    .map((i) => (i.url.startsWith('http') ? i.url : api.toAbsoluteUploadUrl(i.url)));
 });
 
 const activeImageUrl = computed(() => imageUrls.value[activeImageIndex.value] ?? null);

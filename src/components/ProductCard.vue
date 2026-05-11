@@ -41,9 +41,10 @@ const api = useApi();
 const estimate = useEstimateStore();
 
 const imageUrl = computed(() => {
-  const first = props.product.images?.[0];
-  if (!first?.url) return null;
-  return first.url.startsWith('http') ? first.url : api.toAbsoluteUploadUrl(first.url);
+  const imgs = props.product.images ?? [];
+  const img = imgs.find((i) => i.isMain) ?? imgs[0];
+  if (!img?.url) return null;
+  return img.url.startsWith('http') ? img.url : api.toAbsoluteUploadUrl(img.url);
 });
 
 const stockLabel = computed(() => {

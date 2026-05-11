@@ -65,6 +65,11 @@ export function createVodoleyApi(axios: AxiosInstance) {
       return data;
     },
 
+    async unitsList() {
+      const { data } = await axios.get<Unit[]>('/units');
+      return data;
+    },
+
     // Admin auth
     async adminLogin(payload: AdminLoginRequest) {
       const { data } = await axios.post<AdminLoginResponse>('/admin/auth/login', payload);
@@ -72,8 +77,8 @@ export function createVodoleyApi(axios: AxiosInstance) {
     },
 
     // Admin / Products
-    async adminProductsList(query: ProductListQuery = {}) {
-      const { data } = await axios.get<Paginated<Product>>('/admin/products', { params: query });
+    async adminProductsList() {
+      const { data } = await axios.get<Product[]>('/admin/products');
       return data;
     },
 
@@ -143,6 +148,11 @@ export function createVodoleyApi(axios: AxiosInstance) {
       const { data } = await axios.post<ProductImage>(`/admin/products/${productId}/images`, form, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
+      return data;
+    },
+
+    async adminDeleteProductImage(productId: number, imageId: number) {
+      const { data } = await axios.delete<{ deleted: number }>(`/admin/products/${productId}/images/${imageId}`);
       return data;
     },
 

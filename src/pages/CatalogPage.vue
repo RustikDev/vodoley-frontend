@@ -21,7 +21,16 @@
       </div>
 
       <div class="col-12 col-md-2">
-        <q-input dense outlined type="number" label="Ед. изм. (unitId)" :model-value="ui.unitId" @update:model-value="(v) => (ui.unitId = normalizeNumberInput(v))" />
+        <q-select
+          v-model="ui.unitId"
+          dense
+          outlined
+          emit-value
+          map-options
+          clearable
+          label="Ед. изм."
+          :options="unitOptions"
+        />
       </div>
 
       <div class="col-12 col-md-2">
@@ -121,7 +130,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import CategoryTree from 'src/components/CategoryTree.vue';
 import ProductCard from 'src/components/ProductCard.vue';
@@ -130,12 +139,18 @@ import VdsErrorState from 'src/components/VdsErrorState.vue';
 import { useApi } from 'src/api/useApi';
 import { useCatalogStore } from 'src/stores/catalog';
 import { debounce } from 'src/utils/debounce';
-import type { ProductListQuery, ProductSort } from 'src/types/api';
+import type { ProductListQuery, ProductSort, Unit } from 'src/types/api';
 
 const api = useApi();
 const store = useCatalogStore();
 const route = useRoute();
 const router = useRouter();
+
+const units = ref<Unit[]>([]);
+const unitOptions = computed(() => [
+  { label: 'Все', value: null },
+  ...units.value.map((u) => ({ label: `${u.name} (${u.shortName})`, value: u.id })),
+]);
 
 const sortOptions: Array<{ label: string; value: ProductSort }> = [
   { label: 'Новизна', value: 'newest' },
@@ -302,7 +317,10 @@ watch(
 );
 
 onMounted(async () => {
-  if (store.categories.length === 0) await store.fetchCategories(api);
+  await Promise.all([
+    store.categories.length === 0 ? store.fetchCategories(api) : Promise.resolve(),
+    api.unitsList().then((data) => { units.value = data; }).catch(() => {}),
+  ]);
 });
 </script>
 

@@ -23,7 +23,6 @@
       :columns="columns"
       :loading="loading"
       v-model:pagination="pagination"
-      @request="onRequest"
     >
       <template #body-cell-price="p">
         <q-td :props="p" class="text-right">{{ formatPriceRub(p.row.price) }}</q-td>
@@ -109,13 +108,38 @@
               />
             </div>
 
+            <div class="col-12" v-if="form.id && form.existingImages.length > 0">
+              <div class="text-caption text-grey-7 q-mb-xs">Текущие изображения</div>
+              <div class="row q-col-gutter-sm">
+                <div v-for="img in form.existingImages" :key="img.id" class="col-auto" style="position:relative">
+                  <q-img
+                    :src="api.toAbsoluteUploadUrl(img.url)"
+                    style="width:80px;height:80px;border-radius:6px"
+                    :ratio="1"
+                  >
+                    <div class="absolute-top-right">
+                      <q-btn
+                        round dense flat
+                        icon="close"
+                        size="xs"
+                        color="negative"
+                        style="background:rgba(0,0,0,.45)"
+                        @click="deleteExistingImage(img.id)"
+                      />
+                    </div>
+                    <q-badge v-if="img.isMain" color="primary" floating label="Гл." />
+                  </q-img>
+                </div>
+              </div>
+            </div>
+
             <div class="col-12">
               <q-file
                 v-model="form.images"
                 multiple
                 outlined
                 accept="image/*"
-                label="Изображения"
+                label="Добавить изображения"
               />
             </div>
           </div>
@@ -134,11 +158,12 @@
 import VdsEmptyState from 'src/components/VdsEmptyState.vue';
 import VdsErrorState from 'src/components/VdsErrorState.vue';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
+
 import { Dialog, Notify } from 'quasar';
 import type { QTableColumn } from 'quasar';
 import { useApi } from 'src/api/useApi';
 import { formatPriceRub } from 'src/utils/format';
-import type { Category, InventoryStatus, Paginated, Product, ProductListQuery, Unit } from 'src/types/api';
+import type { Category, InventoryStatus, Product, ProductImage, Unit } from 'src/types/api';
 
 const api = useApi();
 
@@ -146,13 +171,16 @@ const loading = ref(false);
 const error = ref<string | null>(null);
 const saving = ref(false);
 
-const rows = ref<Product[]>([]);
-const total = ref(0);
+const allRows = ref<Product[]>([]);
+
+const rows = computed(() => {
+  const q = filters.q.trim().toLowerCase();
+  return q ? allRows.value.filter((p) => p.name.toLowerCase().includes(q)) : allRows.value;
+});
 
 const pagination = ref({
   page: 1,
   rowsPerPage: 20,
-  rowsNumber: 0,
 });
 
 const filters = reactive({
@@ -221,6 +249,7 @@ type ProductForm = {
   inventoryQuantity: number | null;
   inventoryStatus: InventoryStatus;
   images: File[];
+  existingImages: ProductImage[];
 };
 
 const dialogOpen = ref(false);
@@ -236,6 +265,7 @@ const form = reactive<ProductForm>({
   inventoryQuantity: null as number | null,
   inventoryStatus: 'IN_STOCK',
   images: [] as File[],
+  existingImages: [] as ProductImage[],
 });
 
 async function loadRefs() {
@@ -246,22 +276,8 @@ async function reload() {
   error.value = null;
   loading.value = true;
   try {
-    const page = pagination.value.page;
-    const pageSize = pagination.value.rowsPerPage;
-
-    const query: ProductListQuery = {
-      page,
-      pageSize,
-      sort: 'newest',
-    };
-
-    if (filters.q) query.q = filters.q;
-
-    const data: Paginated<Product> = await api.adminProductsList(query);
-
-    rows.value = data.items;
-    total.value = data.total;
-    pagination.value.rowsNumber = data.total;
+    allRows.value = await api.adminProductsList();
+    pagination.value.page = 1;
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Ошибка загрузки';
     throw e;
@@ -270,11 +286,6 @@ async function reload() {
   }
 }
 
-function onRequest(props: { pagination: { page: number; rowsPerPage: number } }) {
-  pagination.value.page = props.pagination.page;
-  pagination.value.rowsPerPage = props.pagination.rowsPerPage;
-  void reload();
-}
 
 function openCreate() {
   form.id = null;
@@ -288,6 +299,7 @@ function openCreate() {
   form.inventoryQuantity = null;
   form.inventoryStatus = 'IN_STOCK';
   form.images = [];
+  form.existingImages = [];
   dialogOpen.value = true;
 }
 
@@ -296,14 +308,26 @@ function openEdit(p: Product) {
   form.name = p.name;
   form.slug = p.slug;
   form.description = p.description ?? '';
-  form.price = p.price;
+  form.price = parseFloat(p.price);
   form.categoryId = p.categoryId;
   form.unitId = p.unitId;
   form.isActive = p.isActive;
   form.inventoryQuantity = p.inventory?.quantity ?? null;
   form.inventoryStatus = p.inventory?.status ?? 'IN_STOCK';
   form.images = [];
+  form.existingImages = [...(p.images ?? [])];
   dialogOpen.value = true;
+}
+
+async function deleteExistingImage(imageId: number) {
+  if (!form.id) return;
+  try {
+    await api.adminDeleteProductImage(form.id, imageId);
+    form.existingImages = form.existingImages.filter((i) => i.id !== imageId);
+    Notify.create({ type: 'positive', message: 'Изображение удалено' });
+  } catch (e) {
+    Notify.create({ type: 'negative', message: e instanceof Error ? e.message : 'Ошибка удаления' });
+  }
 }
 
 async function save() {
@@ -325,10 +349,16 @@ async function save() {
         isActive: form.isActive,
       });
 
-      await api.adminUpdateInventory(form.id, {
-        quantity: form.inventoryQuantity ?? 0,
-        status: form.inventoryStatus,
-      });
+      const origInventory = allRows.value.find((p) => p.id === form.id)?.inventory;
+      const invChanged =
+        form.inventoryQuantity !== (origInventory?.quantity ?? null) ||
+        form.inventoryStatus !== (origInventory?.status ?? 'IN_STOCK');
+      if (invChanged) {
+        await api.adminUpdateInventory(form.id, {
+          quantity: form.inventoryQuantity ?? 0,
+          status: form.inventoryStatus,
+        });
+      }
 
       for (const f of form.images) {
         await api.adminUploadProductImage(form.id, f);
@@ -370,20 +400,21 @@ function confirmDelete(p: Product) {
     persistent: true,
   }).onOk(() => {
     void (async () => {
-      await api.adminDeleteProduct(p.id);
-      await reload();
-      Notify.create({ type: 'positive', message: 'Удалено' });
+      try {
+        await api.adminDeleteProduct(p.id);
+        await reload();
+        Notify.create({ type: 'positive', message: 'Удалено' });
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : 'Ошибка удаления';
+        Notify.create({ type: 'negative', message: msg });
+      }
     })();
   });
 }
 
 watch(
   () => filters.q,
-  (_v, _o, onCleanup) => {
-    pagination.value.page = 1;
-    const t = window.setTimeout(() => void reload(), 350);
-    onCleanup(() => window.clearTimeout(t));
-  },
+  () => { pagination.value.page = 1; },
 );
 
 onMounted(async () => {

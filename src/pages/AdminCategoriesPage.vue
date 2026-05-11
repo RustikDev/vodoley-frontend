@@ -203,9 +203,13 @@ function confirmDelete(c: Category) {
     persistent: true,
   }).onOk(() => {
     void (async () => {
-      await api.adminDeleteCategory(c.id);
-      await reload();
-      Notify.create({ type: 'positive', message: 'Удалено' });
+      try {
+        await api.adminDeleteCategory(c.id);
+        await reload();
+        Notify.create({ type: 'positive', message: 'Удалено' });
+      } catch (e) {
+        Notify.create({ type: 'negative', message: e instanceof Error ? e.message : 'Ошибка удаления' });
+      }
     })();
   });
 }

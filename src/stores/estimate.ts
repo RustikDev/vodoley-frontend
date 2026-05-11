@@ -93,7 +93,7 @@ export const useEstimateStore = defineStore('estimate', {
           productId: product.id,
           name: product.name,
           unit,
-          price: product.price,
+          price: parseFloat(product.price),
           quantity: q,
         });
       }

@@ -13,6 +13,7 @@ export type CategoryNode = {
   name: string;
   slug: string;
   parentId: number | null;
+  isActive: boolean;
   sortOrder: number;
   children: CategoryNode[];
 };
@@ -37,11 +38,12 @@ export type Unit = {
 };
 
 export type ProductImage = {
-  id?: number;
+  id: number;
+  productId: number;
   url: string;
-  alt?: string | null;
-  sortOrder?: number;
-  isMain?: boolean;
+  alt: string | null;
+  isMain: boolean;
+  sortOrder: number;
 };
 
 export type Inventory = {
@@ -55,7 +57,7 @@ export type Product = {
   name: string;
   slug: string;
   description?: string | null;
-  price: number;
+  price: string;
   isActive: boolean;
   categoryId: number;
   unitId: number;
@@ -121,6 +123,7 @@ export type CreateUnitRequest = {
   name: string;
   shortName: string;
   isActive?: boolean;
+  sortOrder?: number;
 };
 export type UpdateUnitRequest = Partial<CreateUnitRequest>;
 
@@ -132,7 +135,6 @@ export type CreateProductRequest = {
   categoryId: number;
   unitId: number;
   isActive?: boolean;
-  images?: ProductImage[];
   inventory?: Partial<Pick<Inventory, 'quantity' | 'status'>>;
 };
 export type UpdateProductRequest = Partial<CreateProductRequest>;

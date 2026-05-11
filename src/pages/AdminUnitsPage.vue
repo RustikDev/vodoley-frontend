@@ -134,12 +134,14 @@ async function save() {
         name: form.name,
         shortName: form.shortName,
         isActive: form.isActive,
+        sortOrder: form.sortOrder,
       });
     } else {
       await api.adminCreateUnit({
         name: form.name,
         shortName: form.shortName,
         isActive: form.isActive,
+        sortOrder: form.sortOrder,
       });
     }
 
@@ -162,9 +164,13 @@ function confirmDelete(u: Unit) {
     persistent: true,
   }).onOk(() => {
     void (async () => {
-      await api.adminDeleteUnit(u.id);
-      await reload();
-      Notify.create({ type: 'positive', message: 'Удалено' });
+      try {
+        await api.adminDeleteUnit(u.id);
+        await reload();
+        Notify.create({ type: 'positive', message: 'Удалено' });
+      } catch (e) {
+        Notify.create({ type: 'negative', message: e instanceof Error ? e.message : 'Ошибка удаления' });
+      }
     })();
   });
 }
