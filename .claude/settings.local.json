@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Read(//d/Проекты/vodoley-beckend/**)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(cat \"/tmp/vodoley_design/vodoley/chats/chat1.md\")",
+      "Read(//tmp/vodoley_design/vodoley/project/**)"
     ]
   }
 }

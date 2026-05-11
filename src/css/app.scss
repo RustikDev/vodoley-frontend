@@ -1,81 +1,185 @@
-﻿@use './tokens.scss';
+@use './tokens.scss';
 
+/* ── Base ── */
 html,
 body,
 #q-app {
   background: var(--vds-color-bg);
   color: var(--vds-color-text);
+  font-family: 'Manrope', 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 a {
   color: inherit;
+  text-decoration: none;
 }
 
+/* ── Layout helpers ── */
 .vds-container {
   max-width: var(--vds-container);
   margin: 0 auto;
-  padding-left: var(--vds-space-4);
-  padding-right: var(--vds-space-4);
+  padding-left: var(--vds-space-6);
+  padding-right: var(--vds-space-6);
+  width: var(--vds-container);
+
+  @media (max-width: 767px) {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 }
 
+/* ── Card ── */
 .vds-card {
+  background: var(--vds-color-surface);
   border: 1px solid var(--vds-color-border);
   border-radius: var(--vds-radius-md);
   box-shadow: var(--vds-shadow-sm);
-  background: var(--vds-color-surface);
 }
 
 .vds-muted {
   color: var(--vds-color-text-muted);
 }
 
-/* Header (ecommerce-style, sticky, big search) */
-.vds-header {
-  background: linear-gradient(135deg, var(--vds-color-primary), var(--vds-color-primary-2));
-  color: #fff;
+/* Header styles moved to MainLayout.vue scoped styles */
+
+/* ── Footer ── */
+.site-footer {
+  background: var(--vds-color-ink) !important;
+  color: var(--vds-color-ink-4) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.vds-header__inner {
-  height: var(--vds-header-height);
+.footer-grid {
+  display: grid;
+  grid-template-columns: 200px 1fr 1fr 1fr 1fr;
+  gap: 40px;
+  padding: 48px 0 40px;
 }
 
-.vds-logo {
-  font-weight: 800;
-  letter-spacing: 0.2px;
+.footer-brand {
+  .footer-logo {
+    font-weight: 800;
+    font-size: 20px;
+    color: #fff;
+    letter-spacing: -0.3px;
+    margin-bottom: 8px;
+  }
+  .footer-tagline {
+    font-size: 13px;
+    color: var(--vds-color-ink-4);
+    line-height: 1.5;
+  }
 }
 
-.vds-search {
-  width: min(720px, 100%);
+.footer-col {
+  h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 0 0 16px;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  a {
+    font-size: 14px;
+    color: var(--vds-color-ink-4);
+    transition: color 0.15s;
+    &:hover {
+      color: #fff;
+    }
+  }
 }
 
-.vds-search .q-field__control {
-  border-radius: 999px;
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--vds-color-ink-4);
 }
 
-.vds-search .q-field__control,
-.vds-search .q-field__native,
-.vds-search .q-field__marginal {
-  color: #fff;
+/* ── Home page ── */
+.vds-home-page {
+  padding: 0 !important;
 }
 
-.vds-search.q-field--outlined .q-field__control:before {
-  border-color: rgba(255, 255, 255, 0.35);
+/* ── Section spacing ── */
+.home-section {
+  padding: 56px 0;
 }
 
-.vds-search.q-field--outlined.q-field--focused .q-field__control:before {
-  border-color: rgba(255, 255, 255, 0.7);
+.home-section--tight {
+  padding: 32px 0;
 }
 
-.vds-search input::placeholder {
-  color: rgba(255, 255, 255, 0.72);
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+
+  h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--vds-color-ink);
+    margin: 0;
+    letter-spacing: -0.3px;
+  }
 }
 
-/* Improve table containers */
+/* ── Quasar overrides ── */
 .q-table__container {
   border-radius: var(--vds-radius-md);
+  border: 1px solid var(--vds-color-border);
+  box-shadow: var(--vds-shadow-sm);
 }
 
-/* Slightly denser buttons in header */
-.vds-header .q-btn {
-  color: #fff;
+.q-table thead tr th {
+  background: var(--vds-color-bg);
+  color: var(--vds-color-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.q-btn--standard {
+  box-shadow: none !important;
+}
+
+.q-btn[class*='bg-primary'],
+.q-btn.bg-primary {
+  background: var(--vds-color-primary) !important;
+  transition: background 0.15s;
+}
+.q-btn[class*='bg-primary']:hover,
+.q-btn.bg-primary:hover {
+  background: var(--vds-color-primary-dark) !important;
+}
+
+.q-field--outlined.q-field--focused .q-field__control:before {
+  border-color: var(--vds-color-primary) !important;
+  border-width: 2px;
+}
+
+.q-badge {
+  border-radius: var(--vds-radius-xs);
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.q-page {
+  padding-top: var(--vds-space-6);
+  padding-bottom: var(--vds-space-12);
 }

@@ -13,8 +13,9 @@
 
     <div v-else class="row q-col-gutter-md">
       <div v-for="c in top" :key="c.id" class="col-6 col-sm-3">
-        <q-card flat bordered class="tile" @click="go(c.id)">
-          <q-card-section class="q-pa-sm">
+        <q-card flat class="tile" @click="go(c.id)">
+          <q-card-section class="q-pa-md">
+            <q-icon name="category" color="primary" size="20px" class="q-mb-xs" />
             <div class="text-body2 text-weight-medium ellipsis">{{ c.name }}</div>
           </q-card-section>
         </q-card>
@@ -54,12 +55,15 @@ onMounted(async () => {
 <style scoped lang="scss">
 .tile {
   cursor: pointer;
-  border-radius: var(--vds-radius-sm);
-  transition: transform 120ms ease, box-shadow 120ms ease;
+  border: 1px solid var(--vds-color-border);
+  border-radius: var(--vds-radius-md);
+  background: var(--vds-color-surface);
+  transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
 }
 
 .tile:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   box-shadow: var(--vds-shadow-md);
+  border-color: var(--vds-color-primary);
 }
 </style>

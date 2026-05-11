@@ -1,32 +1,19 @@
-﻿// Quasar Sass (& SCSS) Variables
-// --------------------------------------------------
+// Quasar Sass Variables
 
-$vds-primary: #0b5cff;
-$vds-secondary: #094ad0;
-$vds-accent: #1a73e8;
+$primary:   #2557e6;
+$secondary: #1a45c9;
+$accent:    #ffc83d;
 
-$vds-dark: #0b1020;
-$vds-dark-page: #0b1020;
+$dark:      #0e1430;
+$dark-page: #080d1f;
 
-$vds-positive: #16a34a;
-$vds-negative: #dc2626;
-$vds-info: #0284c7;
-$vds-warning: #f59e0b;
+$positive: #16a34a;
+$negative: #dc2626;
+$info:     #0284c7;
+$warning:  #f59e0b;
 
-$primary: $vds-primary;
-$secondary: $vds-secondary;
-$accent: $vds-accent;
+$generic-border-radius: 12px;
+$button-border-radius:  8px;
+$input-border-radius:   8px;
 
-$dark: $vds-dark;
-$dark-page: $vds-dark-page;
-
-$positive: $vds-positive;
-$negative: $vds-negative;
-$info: $vds-info;
-$warning: $vds-warning;
-
-$generic-border-radius: 18px;
-$button-border-radius: 16px;
-$input-border-radius: 16px;
-
-$button-padding: 10px 16px;
+$button-padding: 8px 20px;

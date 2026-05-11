@@ -136,6 +136,7 @@ import { useRoute } from 'vue-router';
 import { Notify } from 'quasar';
 import { useApi } from 'src/api/useApi';
 import { useEstimateStore } from 'src/stores/estimate';
+import { useRecentlyViewedStore } from 'src/stores/recentlyViewed';
 import { formatPriceRub } from 'src/utils/format';
 import type { Product } from 'src/types/api';
 import ProductCard from 'src/components/ProductCard.vue';
@@ -143,6 +144,7 @@ import ProductCard from 'src/components/ProductCard.vue';
 const route = useRoute();
 const api = useApi();
 const estimate = useEstimateStore();
+const recentlyViewed = useRecentlyViewedStore();
 
 const loading = ref(false);
 const recoLoading = ref(false);
@@ -247,6 +249,7 @@ watch(
 onMounted(async () => {
   await reload();
   await reloadRecommendations();
+  if (product.value) recentlyViewed.add(product.value);
 });
 </script>
 
