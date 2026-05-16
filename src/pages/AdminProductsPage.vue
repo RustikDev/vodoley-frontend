@@ -3,10 +3,30 @@
     <div class="row items-center justify-between q-mb-md">
       <div class="text-h6">Товары</div>
       <div class="row q-gutter-sm">
-        <q-input v-model.trim="filters.q" dense outlined clearable placeholder="Поиск" style="width: 260px" />
         <q-btn outline icon="refresh" label="Обновить" :loading="loading" @click="reload" />
         <q-btn color="primary" icon="add" label="Создать" @click="openCreate" />
       </div>
+    </div>
+
+    <div class="row q-gutter-sm q-mb-md items-center">
+      <q-input v-model.trim="filters.q" dense outlined clearable placeholder="Поиск по названию" style="width:260px" />
+      <q-select
+        v-model="filters.categoryId"
+        dense outlined emit-value map-options clearable
+        label="Категория"
+        style="width:200px"
+        :options="[{ label: 'Все категории', value: null }, ...categoryOptions]"
+      />
+      <q-select
+        v-model="filters.brandId"
+        dense outlined emit-value map-options clearable
+        label="Бренд"
+        style="width:180px"
+        :options="[{ label: 'Все бренды', value: null }, ...brandOptions.filter(o => o.value !== null)]"
+      />
+      <q-toggle v-model="filters.isActive" label="Только активные" />
+      <q-toggle v-model="filters.isHit" label="Только хиты" />
+      <div class="text-caption text-grey-6">Найдено: {{ rows.length }}</div>
     </div>
 
     <VdsErrorState
@@ -202,18 +222,29 @@ const saving = ref(false);
 
 const allRows = ref<Product[]>([]);
 
+const filters = reactive({
+  q: '',
+  categoryId: null as number | null,
+  brandId: null as number | null,
+  isActive: false,
+  isHit: false,
+});
+
 const rows = computed(() => {
   const q = filters.q.trim().toLowerCase();
-  return q ? allRows.value.filter((p) => p.name.toLowerCase().includes(q)) : allRows.value;
+  return allRows.value.filter((p) => {
+    if (q && !p.name.toLowerCase().includes(q)) return false;
+    if (filters.categoryId !== null && p.categoryId !== filters.categoryId) return false;
+    if (filters.brandId !== null && p.brandId !== filters.brandId) return false;
+    if (filters.isActive && !p.isActive) return false;
+    if (filters.isHit && !p.isHit) return false;
+    return true;
+  });
 });
 
 const pagination = ref({
   page: 1,
   rowsPerPage: 20,
-});
-
-const filters = reactive({
-  q: '',
 });
 
 const columns: QTableColumn[] = [
@@ -500,7 +531,7 @@ function confirmDelete(p: Product) {
 }
 
 watch(
-  () => filters.q,
+  () => [filters.q, filters.categoryId, filters.brandId, filters.isActive, filters.isHit],
   () => { pagination.value.page = 1; },
 );
 

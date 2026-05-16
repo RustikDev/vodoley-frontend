@@ -8,6 +8,12 @@
       </div>
     </div>
 
+    <div class="row q-gutter-sm q-mb-md items-center">
+      <q-input v-model.trim="search" dense outlined clearable placeholder="Поиск по названию" style="width:280px" />
+      <q-toggle v-model="filterActive" label="Только активные" />
+      <div class="text-caption text-grey-6">Найдено: {{ filteredRows.length }}</div>
+    </div>
+
     <VdsErrorState
       v-if="error"
       title="Ошибка"
@@ -18,7 +24,7 @@
       flat
       bordered
       row-key="id"
-      :rows="rows"
+      :rows="filteredRows"
       :columns="columns"
       :loading="loading"
       :pagination="{ rowsPerPage: 20 }"
@@ -69,7 +75,7 @@
 <script setup lang="ts">
 import VdsEmptyState from 'src/components/VdsEmptyState.vue';
 import VdsErrorState from 'src/components/VdsErrorState.vue';
-import { onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { Dialog, Notify } from 'quasar';
 import { useApi } from 'src/api/useApi';
 import type { QTableColumn } from 'quasar';
@@ -81,6 +87,18 @@ const loading = ref(false);
 const error = ref<string | null>(null);
 const saving = ref(false);
 const rows = ref<Unit[]>([]);
+const search = ref('');
+const filterActive = ref(false);
+
+const filteredRows = computed(() => {
+  const q = search.value.toLowerCase();
+  return rows.value.filter((u) => {
+    if (q && !u.name.toLowerCase().includes(q) && !u.shortName.toLowerCase().includes(q)) return false;
+    if (filterActive.value && !u.isActive) return false;
+    return true;
+  });
+});
+
 const togglingActive = ref<number | null>(null);
 
 async function toggleActive(u: Unit) {

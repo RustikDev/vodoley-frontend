@@ -5,8 +5,8 @@
     <HomeCategoryGrid />
     <HomeBestsellers
       title="Хиты продаж"
-      :query="{ inStock: true, sort: 'newest' }"
-      to="/catalog?inStock=true&sort=newest"
+      :query="{ isHit: true, sort: 'newest' }"
+      to="/catalog?isHit=true"
     />
     <HomeSmeta />
     <HomeBrandStrip />

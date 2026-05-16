@@ -47,7 +47,7 @@
 
       <div class="col-12 col-md-4">
         <q-toggle v-model="ui.inStock" label="Только в наличии" />
-        <q-toggle v-model="ui.includeChildren" label="С подкатегориями" :disable="ui.categoryId == null" />
+        <q-toggle v-model="ui.isHit" label="Хиты продаж" />
       </div>
 
       <div class="col-12 col-md-8 text-right">
@@ -187,6 +187,7 @@ type UiState = {
   minPrice: number | null;
   maxPrice: number | null;
   inStock: boolean;
+  isHit: boolean;
   sort: ProductSort;
   page: number;
   pageSize: number;
@@ -200,6 +201,7 @@ const ui = reactive<UiState>({
   minPrice: null,
   maxPrice: null,
   inStock: false,
+  isHit: false,
   sort: 'newest',
   page: 1,
   pageSize: 12,
@@ -220,6 +222,7 @@ function buildRouteQuery(): Record<string, string> {
   if (ui.minPrice != null) q.minPrice = String(ui.minPrice);
   if (ui.maxPrice != null) q.maxPrice = String(ui.maxPrice);
   if (ui.inStock) q.inStock = 'true';
+  if (ui.isHit) q.isHit = 'true';
   if (ui.sort) q.sort = String(ui.sort);
   if (ui.page && ui.page !== 1) q.page = String(ui.page);
   if (ui.pageSize && ui.pageSize !== 12) q.pageSize = String(ui.pageSize);
@@ -240,6 +243,7 @@ function buildApiQuery(): ProductListQuery {
   if (ui.minPrice != null) query.minPrice = ui.minPrice;
   if (ui.maxPrice != null) query.maxPrice = ui.maxPrice;
   if (ui.inStock) query.inStock = true;
+  if (ui.isHit) query.isHit = true;
 
   return query;
 }
@@ -260,6 +264,7 @@ function applyRoute() {
     ui.minPrice = readNumber(route.query.minPrice);
     ui.maxPrice = readNumber(route.query.maxPrice);
     ui.inStock = readBool(route.query.inStock);
+    ui.isHit = readBool(route.query.isHit);
     ui.sort = readSort(route.query.sort);
     ui.page = readNumber(route.query.page) ?? 1;
     ui.pageSize = readNumber(route.query.pageSize) ?? 12;
@@ -282,6 +287,7 @@ function reset() {
   ui.minPrice = null;
   ui.maxPrice = null;
   ui.inStock = false;
+  ui.isHit = false;
   ui.sort = readSort(route.query.sort);
   ui.page = 1;
   ui.pageSize = 12;
@@ -289,7 +295,7 @@ function reset() {
 
 // When filters change -> reset to page 1 and sync URL (fetch happens from route watcher)
 watch(
-  () => [ui.q, ui.categoryId, ui.includeChildren, ui.unitId, ui.minPrice, ui.maxPrice, ui.inStock, ui.sort, ui.pageSize],
+  () => [ui.q, ui.categoryId, ui.includeChildren, ui.unitId, ui.minPrice, ui.maxPrice, ui.inStock, ui.isHit, ui.sort, ui.pageSize],
   () => {
     if (applyingRoute) return;
     ui.page = 1;

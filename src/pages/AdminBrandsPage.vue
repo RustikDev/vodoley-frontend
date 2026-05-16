@@ -10,13 +10,19 @@
       </div>
     </div>
 
+    <div class="row q-gutter-sm q-mb-md items-center">
+      <q-input v-model.trim="search" dense outlined clearable placeholder="Поиск по названию или slug" style="width:280px" />
+      <q-toggle v-model="filterActive" label="Только активные" />
+      <div class="text-caption text-grey-6">Найдено: {{ filteredRows.length }}</div>
+    </div>
+
     <VdsErrorState v-if="error" title="Ошибка загрузки" :description="error" :on-retry="reload" />
 
     <q-table
       flat
       bordered
       row-key="id"
-      :rows="rows"
+      :rows="filteredRows"
       :columns="columns"
       :loading="loading"
       :pagination="{ rowsPerPage: 25 }"
@@ -79,7 +85,7 @@
           <q-toggle
             :model-value="p.row.isActive"
             dense
-            color="positive"
+            color="primary"
             :loading="togglingId === p.row.id"
             @update:model-value="toggleActive(p.row)"
           />
@@ -151,12 +157,14 @@
 
     <!-- Create / Edit dialog -->
     <q-dialog v-model="dialogOpen" persistent>
-      <q-card style="width:680px; max-width:95vw">
+      <q-card style="width:680px; max-width:95vw; max-height:90vh; display:flex; flex-direction:column; overflow:hidden">
         <q-card-section class="row items-center q-pb-none">
           <div class="text-h6">{{ form.id ? 'Редактировать бренд' : 'Новый бренд' }}</div>
           <q-space />
           <q-btn flat round dense icon="close" v-close-popup />
         </q-card-section>
+
+        <div style="overflow-y:auto; flex:1">
 
         <!-- Logo section -->
         <q-card-section class="q-pt-none">
@@ -246,7 +254,7 @@
           />
 
           <div class="row q-gutter-sm items-center">
-            <q-toggle v-model="form.isActive" label="Активен" color="positive" />
+            <q-toggle v-model="form.isActive" label="Активен" color="primary" />
             <q-input
               v-model.number="form.sortOrder"
               outlined
@@ -257,6 +265,8 @@
             />
           </div>
         </q-card-section>
+
+        </div>
 
         <q-card-actions align="right" class="q-px-md q-pb-md">
           <q-btn flat label="Отмена" v-close-popup />
@@ -276,7 +286,7 @@
 <script setup lang="ts">
 import VdsEmptyState from 'src/components/VdsEmptyState.vue';
 import VdsErrorState from 'src/components/VdsErrorState.vue';
-import { onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { Dialog, Notify } from 'quasar';
 import { useApi } from 'src/api/useApi';
 import type { QTableColumn } from 'quasar';
@@ -288,6 +298,17 @@ const api = useApi();
 const loading = ref(false);
 const error = ref<string | null>(null);
 const rows = ref<Brand[]>([]);
+const search = ref('');
+const filterActive = ref(false);
+
+const filteredRows = computed(() => {
+  const q = search.value.toLowerCase();
+  return rows.value.filter((b) => {
+    if (q && !b.name.toLowerCase().includes(q) && !b.slug.toLowerCase().includes(q)) return false;
+    if (filterActive.value && !b.isActive) return false;
+    return true;
+  });
+});
 
 const columns: QTableColumn[] = [
   { name: 'logo',         label: 'Лого',       field: 'logo',         align: 'left',  style: 'width:72px' },

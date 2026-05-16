@@ -65,20 +65,16 @@ const error = ref<string | null>(null);
 const activeTab = ref<string>('all');
 
 const tabs = [
-  { key: 'all',      label: 'Все',        q: '' },
-  { key: 'tool',     label: 'Инструмент', q: 'инструмент' },
-  { key: 'material', label: 'Материалы',  q: 'материал' },
-  { key: 'finish',   label: 'Отделка',    q: 'отделка' },
+  { key: 'all',      label: 'Все',        extra: {} },
+  { key: 'instock',  label: 'В наличии',  extra: { inStock: true } },
+  { key: 'order',    label: 'Под заказ',  extra: { inStock: false } },
 ];
 
-async function load(extraQ = '') {
+async function load(extra: Record<string, unknown> = {}) {
   error.value = null;
   loading.value = true;
   try {
-    const q = extraQ
-      ? { ...props.query, q: extraQ, page: 1, pageSize: 8 }
-      : { ...props.query, page: 1, pageSize: 8 };
-    const res = await api.productsList(q);
+    const res = await api.productsList({ ...props.query, ...extra, page: 1, pageSize: 8 });
     items.value = res.items;
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Ошибка загрузки';
@@ -90,7 +86,7 @@ async function load(extraQ = '') {
 function setTab(key: string) {
   activeTab.value = key;
   const tab = tabs.find((t) => t.key === key);
-  void load(tab?.q ?? '');
+  void load(tab?.extra ?? {});
 }
 
 onMounted(() => { void load(); });

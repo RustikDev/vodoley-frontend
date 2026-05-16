@@ -8,6 +8,12 @@
       </div>
     </div>
 
+    <div class="row q-gutter-sm q-mb-md items-center">
+      <q-input v-model.trim="search" dense outlined clearable placeholder="Поиск по названию или slug" style="width:280px" />
+      <q-toggle v-model="filterActive" label="Только активные" />
+      <div class="text-caption text-grey-6">Найдено: {{ filteredRows.length }}</div>
+    </div>
+
     <VdsErrorState
       v-if="error"
       title="Ошибка"
@@ -18,7 +24,7 @@
       flat
       bordered
       row-key="id"
-      :rows="rows"
+      :rows="filteredRows"
       :columns="columns"
       :loading="loading"
       :pagination="{ rowsPerPage: 20 }"
@@ -96,6 +102,18 @@ const loading = ref(false);
 const error = ref<string | null>(null);
 const saving = ref(false);
 const rows = ref<Category[]>([]);
+const search = ref('');
+const filterActive = ref(false);
+
+const filteredRows = computed(() => {
+  const q = search.value.toLowerCase();
+  return rows.value.filter((c) => {
+    if (q && !c.name.toLowerCase().includes(q) && !c.slug.toLowerCase().includes(q)) return false;
+    if (filterActive.value && !c.isActive) return false;
+    return true;
+  });
+});
+
 const togglingActive = ref<number | null>(null);
 
 async function toggleActive(c: Category) {
