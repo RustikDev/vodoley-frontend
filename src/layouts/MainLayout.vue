@@ -45,17 +45,18 @@
 
             <!-- Search bar -->
             <div class="search-bar" :class="{ 'search-bar--focused': searchFocused }">
-              <button class="search-cat" @click.stop="catOpen = !catOpen">
+              <div class="search-cat" :class="{ 'search-cat--open': catOpen }">
                 <q-icon name="view_headline" size="15px" />
                 <span>Все категории</span>
-                <q-icon name="expand_more" size="15px" class="search-cat-arrow" />
+                <q-icon name="expand_more" size="15px" class="search-cat-arrow" :class="{ 'search-cat-arrow--open': catOpen }" />
 
                 <q-menu
-                  v-model="catOpen"
                   anchor="bottom left"
                   self="top left"
                   :offset="[0, 4]"
                   class="search-cat-menu"
+                  @show="catOpen = true"
+                  @hide="catOpen = false"
                 >
                   <q-list dense style="min-width: 220px;">
                     <q-item clickable v-close-popup @click="goCategory(null)">
@@ -72,7 +73,7 @@
                     </q-item>
                   </q-list>
                 </q-menu>
-              </button>
+              </div>
 
               <div class="search-divider" />
 
@@ -157,55 +158,80 @@
     </q-page-container>
 
     <!-- Footer -->
-    <div class="site-footer">
+    <footer class="site-footer">
       <div class="vds-container">
         <div class="footer-grid">
 
+          <!-- Brand -->
           <div class="footer-brand">
-            <div class="footer-logo">Водолей</div>
-            <div class="footer-tagline">Строительный магазин.<br>Инструменты и материалы.</div>
+            <div class="footer-brand__mark">
+              <div class="footer-brand__icon">В</div>
+              <div>
+                <div class="footer-brand__name">Водолей</div>
+                <div class="footer-brand__sub">с 2009 года</div>
+              </div>
+            </div>
+            <p class="footer-brand__desc">
+              Строительный магазин в Бахчисарае. Инструменты, материалы и всё для ремонта.
+            </p>
+            <a href="tel:+78001000000" class="footer-phone">
+              <q-icon name="call" size="16px" />
+              +7 (800) 100-00-00
+            </a>
+            <div class="footer-hours">
+              <q-icon name="schedule" size="14px" />
+              Пн–Вс, 8:00–18:00
+            </div>
           </div>
 
+          <!-- Покупателям -->
           <div class="footer-col">
-            <h4>Покупателям</h4>
+            <div class="footer-col__head">Покупателям</div>
             <ul>
               <li><router-link to="/catalog">Каталог товаров</router-link></li>
               <li><router-link to="/categories">Категории</router-link></li>
+              <li><router-link to="/brands">Бренды</router-link></li>
               <li><router-link to="/estimate">Смета</router-link></li>
             </ul>
           </div>
 
+          <!-- Компания -->
           <div class="footer-col">
-            <h4>Компания</h4>
+            <div class="footer-col__head">Компания</div>
             <ul>
               <li><router-link to="/about">О нас</router-link></li>
+              <li><router-link to="/about">Доставка</router-link></li>
+              <li><router-link to="/about">Оплата</router-link></li>
             </ul>
           </div>
 
+          <!-- Контакты -->
           <div class="footer-col">
-            <h4>Контакты</h4>
+            <div class="footer-col__head">Контакты</div>
             <ul>
               <li><a href="tel:+78001000000">+7 (800) 100-00-00</a></li>
+              <li><span>г. Бахчисарай</span></li>
               <li><span>Пн–Вс 8:00–18:00</span></li>
-            </ul>
-          </div>
-
-          <div class="footer-col">
-            <h4>Доставка</h4>
-            <ul>
-              <li><span>Доставка по городу</span></li>
-              <li><span>Самовывоз</span></li>
             </ul>
           </div>
 
         </div>
 
         <div class="footer-bottom">
-          <span>© {{ new Date().getFullYear() }} Водолей. Все права защищены.</span>
-          <span>Оплата при получении</span>
+          <span class="footer-bottom__copy">© {{ new Date().getFullYear() }} Водолей. Все права защищены.</span>
+          <div class="footer-bottom__badges">
+            <span class="footer-badge">
+              <q-icon name="verified_user" size="14px" />
+              Безопасная оплата
+            </span>
+            <span class="footer-badge">
+              <q-icon name="local_shipping" size="14px" />
+              Доставка по городу
+            </span>
+          </div>
         </div>
       </div>
-    </div>
+    </footer>
 
   </q-layout>
 </template>
@@ -308,8 +334,8 @@ const workStatusText = computed(() => {
 
   .footer-grid {
     grid-template-columns: 1fr 1fr !important;
-    gap: 24px !important;
-    padding: 32px 0 24px !important;
+    gap: 32px 20px !important;
+    padding: 36px 0 28px !important;
   }
 }
 
@@ -332,7 +358,7 @@ const workStatusText = computed(() => {
 
   .footer-grid {
     grid-template-columns: 1fr 1fr 1fr !important;
-    gap: 24px !important;
+    gap: 32px 24px !important;
   }
 }
 
@@ -500,13 +526,28 @@ const workStatusText = computed(() => {
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: color 0.12s;
+  transition: color 0.12s, background 0.12s;
   position: relative;
+  user-select: none;
 
   &:hover { color: #2557e6; }
 }
 
-.search-cat-arrow { color: #8c94b3; margin-left: -2px; }
+.search-cat--open {
+  color: #2557e6;
+  background: #f0f4ff;
+}
+
+.search-cat-arrow {
+  color: #8c94b3;
+  margin-left: -2px;
+  transition: transform 0.2s;
+
+  &--open {
+    transform: rotate(180deg);
+    color: #2557e6;
+  }
+}
 
 .search-divider {
   width: 1px;

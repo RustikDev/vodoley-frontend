@@ -45,16 +45,151 @@ a {
 
 /* ── Footer ── */
 .site-footer {
-  background: var(--vds-color-ink) !important;
-  color: var(--vds-color-ink-4) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: #080d1f;
+  border-top: 3px solid #2557e6;
 }
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 200px 1fr 1fr 1fr 1fr;
-  gap: 40px;
-  padding: 48px 0 40px;
+  grid-template-columns: 260px 1fr 1fr 1fr;
+  gap: 48px;
+  padding: 56px 0 44px;
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.footer-brand__mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-brand__icon {
+  width: 38px;
+  height: 38px;
+  background: #2557e6;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 900;
+  font-size: 19px;
+  flex-shrink: 0;
+}
+
+.footer-brand__name {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.3px;
+  line-height: 1.1;
+}
+
+.footer-brand__sub {
+  font-size: 11px;
+  color: #3a4570;
+  margin-top: 2px;
+}
+
+.footer-brand__desc {
+  font-size: 13px;
+  color: #4a5580;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.footer-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.15s;
+
+  .q-icon { color: #2557e6; }
+  &:hover { color: #7fa8ff; }
+}
+
+.footer-hours {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: #3a4570;
+
+  .q-icon { color: #2d3d6b; }
+}
+
+.footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  a, span {
+    font-size: 13.5px;
+    color: #4a5580;
+    text-decoration: none;
+    transition: color 0.15s;
+    line-height: 1.4;
+    display: block;
+  }
+
+  a:hover { color: #c5cadf; }
+}
+
+.footer-col__head {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footer-bottom__copy {
+  font-size: 12.5px;
+  color: #2d3a5e;
+}
+
+.footer-bottom__badges {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.footer-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #2d3a5e;
+
+  .q-icon { color: #2d3a5e; }
 }
 
 .footer-brand {
@@ -168,11 +303,6 @@ a {
   background: var(--vds-color-primary-dark) !important;
 }
 
-.q-field--outlined.q-field--focused .q-field__control:before {
-  border-color: var(--vds-color-primary) !important;
-  border-width: 2px;
-}
-
 .q-badge {
   border-radius: var(--vds-radius-xs);
   font-weight: 700;
@@ -182,4 +312,100 @@ a {
 .q-page {
   padding-top: var(--vds-space-6);
   padding-bottom: var(--vds-space-12);
+}
+
+/* ── Input / Select / File unified style ── */
+
+/* Default border */
+.q-field--outlined .q-field__control:before {
+  border-color: var(--vds-color-border);
+  border-radius: var(--vds-radius-sm);
+  transition: border-color 0.15s;
+}
+
+/* Hover */
+.q-field--outlined:not(.q-field--focused):not(.q-field--error) .q-field__control:hover:before {
+  border-color: #b8c5e0;
+}
+
+/* Focused */
+.q-field--outlined.q-field--focused .q-field__control:before {
+  border-color: var(--vds-color-primary) !important;
+  border-width: 2px;
+}
+
+/* Focused after-line (remove default underline animation) */
+.q-field--outlined .q-field__control:after {
+  display: none;
+}
+
+/* Label default */
+.q-field__label {
+  color: var(--vds-color-ink-3);
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+/* Label focused */
+.q-field--focused .q-field__label {
+  color: var(--vds-color-primary) !important;
+}
+
+/* Label floated (shrunk) */
+.q-field--float .q-field__label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Native input text */
+.q-field__native,
+.q-field__input {
+  color: var(--vds-color-ink) !important;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+/* Placeholder */
+.q-field__native::placeholder {
+  color: var(--vds-color-ink-4);
+  font-weight: 400;
+}
+
+/* Append / prepend icons */
+.q-field__append .q-icon,
+.q-field__prepend .q-icon {
+  color: var(--vds-color-ink-4);
+  font-size: 18px;
+}
+.q-field--focused .q-field__append .q-icon,
+.q-field--focused .q-field__prepend .q-icon {
+  color: var(--vds-color-primary);
+}
+
+/* Error state */
+.q-field--error .q-field__control:before {
+  border-color: var(--vds-color-negative) !important;
+}
+.q-field--error .q-field__label {
+  color: var(--vds-color-negative) !important;
+}
+
+/* Dense variant: tighter padding */
+.q-field--dense .q-field__control {
+  height: 40px;
+}
+
+/* Select dropdown items */
+.q-menu .q-item {
+  font-size: 13.5px;
+  color: var(--vds-color-ink-2);
+  border-radius: var(--vds-radius-xs);
+  margin: 1px 4px;
+  min-height: 36px;
+}
+.q-menu .q-item:hover,
+.q-menu .q-item--active {
+  background: var(--vds-color-primary-light) !important;
+  color: var(--vds-color-primary) !important;
 }

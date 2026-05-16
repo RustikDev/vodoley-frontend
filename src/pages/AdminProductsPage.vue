@@ -8,35 +8,25 @@
       </div>
     </div>
 
-    <div class="row wrap q-col-gutter-sm q-mb-md items-center">
-      <div class="col-12 col-sm-6 col-md-4">
-        <q-input v-model.trim="filters.q" dense outlined clearable placeholder="Поиск по названию" />
-      </div>
-      <div class="col-12 col-sm-6 col-md-3">
-        <q-select
-          v-model="filters.categoryId"
-          dense outlined emit-value map-options clearable
-          label="Категория"
-          :options="[{ label: 'Все категории', value: null }, ...categoryOptions]"
-        />
-      </div>
-      <div class="col-12 col-sm-6 col-md-3">
-        <q-select
-          v-model="filters.brandId"
-          dense outlined emit-value map-options clearable
-          label="Бренд"
-          :options="[{ label: 'Все бренды', value: null }, ...brandOptions.filter(o => o.value !== null)]"
-        />
-      </div>
-      <div class="col-12 col-sm-auto">
-        <q-toggle v-model="filters.isActive" label="Только активные" />
-      </div>
-      <div class="col-12 col-sm-auto">
-        <q-toggle v-model="filters.isHit" label="Только хиты" />
-      </div>
-      <div class="col-12 col-sm-auto">
-        <div class="text-caption text-grey-6">Найдено: {{ rows.length }}</div>
-      </div>
+    <div class="row wrap q-gutter-sm q-mb-md items-center">
+      <q-input v-model.trim="filters.q" dense outlined clearable placeholder="Поиск по названию" class="filter-search" />
+      <q-select
+        v-model="filters.categoryId"
+        dense outlined emit-value map-options clearable
+        label="Категория"
+        class="filter-select"
+        :options="[{ label: 'Все категории', value: null }, ...categoryOptions]"
+      />
+      <q-select
+        v-model="filters.brandId"
+        dense outlined emit-value map-options clearable
+        label="Бренд"
+        class="filter-select"
+        :options="[{ label: 'Все бренды', value: null }, ...brandOptions.filter(o => o.value !== null)]"
+      />
+      <q-toggle v-model="filters.isActive" label="Только активные" />
+      <q-toggle v-model="filters.isHit" label="Только хиты" />
+      <div class="text-caption text-grey-6">Найдено: {{ rows.length }}</div>
     </div>
 
     <VdsErrorState
@@ -552,6 +542,12 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.filter-search { width: 240px; }
+.filter-select { width: 180px; }
+@media (max-width: 599px) {
+  .filter-search, .filter-select { width: 100%; }
+}
+
 .img-thumb-wrap {
   position: relative;
   width: 80px;

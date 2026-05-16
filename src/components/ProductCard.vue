@@ -193,6 +193,7 @@ const stockQty = computed(() => {
   transition: color 0.15s;
 
   &:hover { color: #e53935; }
+  &--active { color: #e53935; }
 }
 
 /* Real image */

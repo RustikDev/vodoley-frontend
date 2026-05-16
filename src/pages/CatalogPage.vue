@@ -7,8 +7,7 @@
           dense
           outlined
           clearable
-          label="Поиск"
-          hint="Название / описание"
+          label="Поиск по названию"
         />
       </div>
 
@@ -57,20 +56,40 @@
 
     <div class="row items-start q-col-gutter-md">
       <div class="col-12 col-md-3">
-        <div class="text-subtitle2 q-mb-sm">Категории</div>
-        <VdsErrorState
-          v-if="store.categoriesError"
-          title="Ошибка категорий"
-          :description="store.categoriesError"
-          :on-retry="() => store.fetchCategories(api)"
-        />
-        <q-skeleton v-else-if="store.categoriesLoading" type="rect" height="260px" />
-        <CategoryTree
-          v-else
-          :nodes="store.categories"
-          :active-id="ui.categoryId"
-          @select="(id) => (ui.categoryId = id)"
-        />
+        <div class="cat-sidebar">
+          <div class="cat-sidebar__head">
+            <span class="cat-sidebar__title">Категории</span>
+            <button v-if="ui.categoryId" class="cat-sidebar__clear" @click="ui.categoryId = null">
+              <q-icon name="close" size="13px" />
+              Сбросить
+            </button>
+          </div>
+
+          <VdsErrorState
+            v-if="store.categoriesError"
+            title="Ошибка категорий"
+            :description="store.categoriesError"
+            :on-retry="() => store.fetchCategories(api)"
+          />
+          <div v-else-if="store.categoriesLoading" class="cat-sidebar__body">
+            <q-skeleton v-for="i in 6" :key="i" type="text" class="q-mb-xs" />
+          </div>
+          <div v-else class="cat-sidebar__body">
+            <button
+              class="cat-item cat-item--all-root"
+              :class="{ 'cat-item--active': !ui.categoryId }"
+              @click="ui.categoryId = null"
+            >
+              <q-icon name="grid_view" size="15px" class="cat-item__icon" />
+              <span>Все категории</span>
+            </button>
+            <CategoryTree
+              :nodes="store.categories"
+              :active-id="ui.categoryId"
+              @select="(id) => (ui.categoryId = id)"
+            />
+          </div>
+        </div>
       </div>
 
       <div class="col-12 col-md-9">
@@ -329,6 +348,88 @@ onMounted(async () => {
   ]);
 });
 </script>
+
+<style scoped lang="scss">
+.cat-sidebar {
+  background: #fff;
+  border: 1px solid #e2e8f5;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(14, 20, 48, 0.05);
+}
+
+.cat-sidebar__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid #f0f4ff;
+}
+
+.cat-sidebar__title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #8c94b3;
+}
+
+.cat-sidebar__clear {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2557e6;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: background 0.13s;
+
+  &:hover { background: #f0f4ff; }
+}
+
+.cat-sidebar__body {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.cat-item--all-root {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0e1430;
+  transition: background 0.13s, color 0.13s;
+  margin-bottom: 4px;
+
+  &:hover { background: #f0f4ff; color: #2557e6; }
+
+  &.cat-item--active {
+    background: #2557e6;
+    color: #fff;
+  }
+}
+
+.cat-item__icon {
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.cat-item--active .cat-item__icon { opacity: 1; }
+</style>
 
 
 

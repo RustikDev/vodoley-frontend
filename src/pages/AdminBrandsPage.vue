@@ -10,16 +10,10 @@
       </div>
     </div>
 
-    <div class="row wrap q-col-gutter-sm q-mb-md items-center">
-      <div class="col-12 col-sm-auto">
-        <q-input v-model.trim="search" dense outlined clearable placeholder="Поиск по названию или slug" style="min-width:220px" />
-      </div>
-      <div class="col-12 col-sm-auto">
-        <q-toggle v-model="filterActive" label="Только активные" />
-      </div>
-      <div class="col-12 col-sm-auto">
-        <div class="text-caption text-grey-6">Найдено: {{ filteredRows.length }}</div>
-      </div>
+    <div class="row wrap q-gutter-sm q-mb-md items-center">
+      <q-input v-model.trim="search" dense outlined clearable placeholder="Поиск по названию или slug" class="filter-search" />
+      <q-toggle v-model="filterActive" label="Только активные" />
+      <div class="text-caption text-grey-6">Найдено: {{ filteredRows.length }}</div>
     </div>
 
     <VdsErrorState v-if="error" title="Ошибка загрузки" :description="error" :on-retry="reload" />
@@ -614,6 +608,9 @@ onMounted(() => { void reload(); });
 </script>
 
 <style scoped>
+.filter-search { width: 280px; }
+@media (max-width: 599px) { .filter-search { width: 100%; } }
+
 .logo-cell { display: flex; align-items: center; }
 
 .logo-thumb {
