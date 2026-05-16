@@ -7,24 +7,30 @@
           <h2 class="brands-title">Бренды</h2>
           <div class="brands-sub">Только оригинальное оборудование от производителей</div>
         </div>
-        <a class="brands-all-link">Все 84 бренда →</a>
+        <router-link to="/brands" class="brands-all-link">
+          Все{{ totalCount > 0 ? ` ${totalCount}` : '' }} брендов →
+        </router-link>
       </div>
 
-      <div class="brands-grid">
+      <div v-if="loading" class="brands-grid">
+        <div v-for="i in DISPLAY_COUNT + 1" :key="i" class="brand-card brand-card--skeleton" />
+      </div>
+
+      <div v-else class="brands-grid">
         <div
           v-for="brand in brands"
-          :key="brand.name"
+          :key="brand.id"
           class="brand-card"
-          @click="go(brand.name)"
+          @click="go(brand.slug)"
         >
-          <div class="brand-card__count">{{ brand.count }}&thinsp;тов.</div>
-          <div class="brand-card__name" :style="brand.color ? { color: brand.color } : {}">
-            {{ brand.name }}
+          <div v-if="brand.productCount != null" class="brand-card__count">
+            {{ brand.productCount }}&thinsp;тов.
           </div>
+          <div class="brand-card__name">{{ brand.name }}</div>
         </div>
 
         <!-- Last cell: "Все бренды →" -->
-        <div class="brand-card brand-card--all">
+        <div class="brand-card brand-card--all" @click="router.push('/brands')">
           <div class="brand-card__all-link">Все бренды →</div>
         </div>
       </div>
@@ -34,26 +40,34 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useApi } from 'src/api/useApi';
+import type { Brand } from 'src/types/api';
 
 const router = useRouter();
+const api = useApi();
 
-const brands = [
-  { name: 'Makita',    count: '840', color: '' },
-  { name: 'Bosch',     count: '720', color: '' },
-  { name: 'DeWalt',    count: '460', color: '' },
-  { name: 'Metabo',    count: '312', color: '' },
-  { name: 'Knauf',     count: '284', color: '' },
-  { name: 'Holcim',    count: '96',  color: '' },
-  { name: 'Tikkurila', count: '320', color: '' },
-  { name: 'Hilti',     count: '410', color: '#d63f00' },
-  { name: 'Karcher',   count: '260', color: '' },
-  { name: 'Egger',     count: '140', color: '' },
-  { name: 'Stihl',     count: '380', color: '' },
-];
+const DISPLAY_COUNT = 11;
 
-function go(name: string) {
-  void router.push({ path: '/catalog', query: { q: name } });
+const loading = ref(false);
+const allBrands = ref<Brand[]>([]);
+
+const brands = computed(() => allBrands.value.slice(0, DISPLAY_COUNT));
+
+const totalCount = computed(() => allBrands.value.length);
+
+onMounted(async () => {
+  loading.value = true;
+  try {
+    allBrands.value = await api.brandsList();
+  } finally {
+    loading.value = false;
+  }
+});
+
+function go(slug: string) {
+  void router.push({ path: `/brands/${slug}` });
 }
 </script>
 
@@ -155,6 +169,19 @@ function go(name: string) {
   font-size: 15px;
   font-weight: 700;
   color: #2557e6;
+}
+
+.brand-card--skeleton {
+  background: #f0f4ff;
+  border-color: #e4eaff;
+  cursor: default;
+  animation: pulse 1.4s ease-in-out infinite;
+  &:hover { box-shadow: none; border-color: #e4eaff; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 @media (max-width: 767px) {

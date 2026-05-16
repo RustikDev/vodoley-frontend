@@ -5,18 +5,22 @@
       <div class="cat-section__head">
         <div>
           <h2 class="cat-section__title">Категории</h2>
-          <div class="cat-section__sub">28&thinsp;040 товаров в 26 разделах</div>
+          <div v-if="!loading && totalCount > 0" class="cat-section__sub">{{ totalCount }} разделов</div>
         </div>
         <router-link to="/categories" class="cat-section__all">Все категории →</router-link>
       </div>
 
-      <div class="cat-grid">
+      <div v-if="loading" class="cat-grid">
+        <div v-for="i in 10" :key="i" class="cat-card cat-card--skeleton" />
+      </div>
+
+      <div v-else class="cat-grid">
         <div
           v-for="cat in categories"
-          :key="cat.name"
+          :key="cat.id"
           class="cat-card"
           :class="{ 'cat-card--featured': cat.featured }"
-          @click="router.push(cat.to)"
+          @click="go(cat)"
         >
           <div class="cat-card__arrow">
             <q-icon name="north_east" size="13px" />
@@ -26,7 +30,7 @@
 
           <div class="cat-card__bottom">
             <div class="cat-card__name">{{ cat.name }}</div>
-            <div class="cat-card__count">{{ cat.count }} товаров</div>
+            <div v-if="cat.childCount > 0" class="cat-card__count">{{ cat.childCount }} подкатегорий</div>
           </div>
         </div>
       </div>
@@ -36,28 +40,55 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useApi } from 'src/api/useApi';
+import type { CategoryNode } from 'src/types/api';
 
 const router = useRouter();
+const api = useApi();
 
-const categories = [
-  { name: 'Сухие смеси и цемент',  count: '1 820', color: '#f9a8a8', featured: false, to: '/catalog?q=сухие+смеси' },
-  { name: 'Кровля и водосток',      count: '942',   color: '#f8b89a', featured: false, to: '/catalog?q=кровля' },
-  { name: 'Электроинструмент',      count: '2 640', color: '#6ec6c4', featured: true,  to: '/catalog?q=электроинструмент' },
-  { name: 'Крепёж и метизы',        count: '4 280', color: '#a8c87a', featured: false, to: '/catalog?q=крепёж' },
-  { name: 'Сантехника',             count: '1 860', color: '#7ecfb8', featured: false, to: '/catalog?q=сантехника' },
-  { name: 'Электрика и кабель',     count: '2 120', color: '#9fa8d4', featured: false, to: '/catalog?q=электрика' },
-  { name: 'Краски и грунты',        count: '1 180', color: '#f0a0b8', featured: false, to: '/catalog?q=краска' },
-  { name: 'Напольные покрытия',     count: '760',   color: '#96cc96', featured: false, to: '/catalog?q=напольные' },
-  { name: 'Сад и участок',          count: '540',   color: '#bdd87a', featured: false, to: '/catalog?q=сад' },
-  { name: 'Спецодежда и СИЗ',       count: '690',   color: '#f5b896', featured: false, to: '/catalog?q=спецодежда' },
+const COLORS = [
+  '#f9a8a8', '#f8b89a', '#6ec6c4', '#a8c87a', '#7ecfb8',
+  '#9fa8d4', '#f0a0b8', '#96cc96', '#bdd87a', '#f5b896',
 ];
+
+const loading = ref(false);
+const allCategories = ref<CategoryNode[]>([]);
+
+const categories = computed(() =>
+  allCategories.value
+    .slice(0, 10)
+    .map((c, i) => ({
+      id: c.id,
+      name: c.name,
+      slug: c.slug,
+      color: COLORS[i % COLORS.length] ?? '#a8c87a',
+      featured: i === 0,
+      childCount: c.children?.length ?? 0,
+    }))
+);
+
+const totalCount = computed(() => allCategories.value.length);
+
+onMounted(async () => {
+  loading.value = true;
+  try {
+    allCategories.value = await api.categoriesTree();
+  } finally {
+    loading.value = false;
+  }
+});
 
 function decoStyle(color: string) {
   return {
     background: `repeating-linear-gradient(-45deg, ${color} 0px, ${color} 5px, transparent 5px, transparent 12px)`,
     opacity: '0.8',
   };
+}
+
+function go(cat: { id: number; slug: string }) {
+  void router.push({ path: '/catalog', query: { categoryId: String(cat.id), includeChildren: 'true' } });
 }
 </script>
 
@@ -185,6 +216,18 @@ function decoStyle(color: string) {
   font-size: 12.5px;
   color: var(--vds-color-primary);
   font-weight: 600;
+}
+
+.cat-card--skeleton {
+  background: #f0f4ff;
+  border-color: #e4eaff;
+  animation: pulse 1.4s ease-in-out infinite;
+  cursor: default;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 @media (max-width: 767px) {

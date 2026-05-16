@@ -6,7 +6,7 @@
           <ul class="cat-list">
             <li
               v-for="(cat, idx) in sidebarCats"
-              :key="cat.name"
+              :key="cat.id"
               class="cat-list__item"
               :class="{ 'cat-list__item--active': idx === activeIdx }"
               @mouseenter="activeIdx = idx"
@@ -120,25 +120,48 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useApi } from 'src/api/useApi';
+import type { CategoryNode } from 'src/types/api';
 
 const router = useRouter();
+const api = useApi();
+
 const slide = ref(1);
 const activeIdx = ref(0);
 
-const sidebarCats = [
-  { name: 'Сухие смеси', icon: 'home_repair_service', to: '/catalog?q=сухие+смеси' },
-  { name: 'Кирпич и газобетон', icon: 'domain', to: '/catalog?q=кирпич' },
-  { name: 'Гипсокартон', icon: 'layers', to: '/catalog?q=гипсокартон' },
-  { name: 'Утеплители', icon: 'ac_unit', to: '/catalog?q=утеплители' },
-  { name: 'Кровельные материалы', icon: 'roofing', to: '/catalog?q=кровля' },
-  { name: 'Лакокрасочные', icon: 'format_paint', to: '/catalog?q=краска' },
-  { name: 'Электроинструмент', icon: 'electrical_services', to: '/catalog?q=электроинструмент' },
-  { name: 'Ручной инструмент', icon: 'handyman', to: '/catalog?q=инструмент' },
-  { name: 'Крепёж', icon: 'hardware', to: '/catalog?q=крепёж' },
-  { name: 'Сантехника', icon: 'plumbing', to: '/catalog?q=сантехника' },
-];
+const allCategories = ref<CategoryNode[]>([]);
+
+const ICON_MAP: Record<string, string> = {
+  'Строительные материалы': 'home_repair_service',
+  'Кровля и фасад':         'roofing',
+  'Стены и перегородки':    'layers',
+  'Полы':                   'grid_on',
+  'Двери и окна':           'sensor_door',
+  'Инженерные системы':     'plumbing',
+  'Электрика':              'electrical_services',
+  'Инструмент':             'handyman',
+  'Крепёж и метизы':        'hardware',
+  'Лакокрасочные материалы':'format_paint',
+};
+
+const sidebarCats = computed(() =>
+  allCategories.value.slice(0, 10).map((c) => ({
+    id: c.id,
+    name: c.name,
+    icon: ICON_MAP[c.name] ?? 'category',
+    to: { path: '/catalog', query: { categoryId: String(c.id), includeChildren: 'true' } },
+  }))
+);
+
+onMounted(async () => {
+  try {
+    allCategories.value = await api.categoriesTree();
+  } catch {
+    // sidebar remains empty — non-critical
+  }
+});
 </script>
 
 <style scoped lang="scss">
