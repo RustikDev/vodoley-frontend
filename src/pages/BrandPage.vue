@@ -17,36 +17,45 @@
       <!-- Brand hero -->
       <div v-else-if="brand" class="brand-hero">
         <div class="brand-hero-logo">
-          <img
-            v-if="logoSrc"
-            :src="logoSrc"
-            :alt="brand.name"
-            class="hero-logo-img"
-          />
+          <img v-if="logoSrc" :src="logoSrc" :alt="brand.name" class="hero-logo-img" />
           <span v-else class="hero-logo-letter">{{ brand.name.charAt(0).toUpperCase() }}</span>
         </div>
 
         <div class="brand-hero-body">
-          <h1>{{ brand.name }}</h1>
-          <p v-if="brand.description" class="brand-desc">{{ brand.description }}</p>
+          <div class="brand-hero-top">
+            <h1>{{ brand.name }}</h1>
+            <a
+              v-if="brand.website"
+              :href="normalizeUrl(brand.website)"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="site-btn"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 2h10v10M12 2 2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+              Сайт бренда
+            </a>
+          </div>
+
+          <div v-if="brand.description" class="brand-desc-wrap" :class="{ collapsed: isLong && !descExpanded }">
+            <p ref="descEl" class="brand-desc">{{ brand.description }}</p>
+            <div v-if="isLong && !descExpanded" class="brand-desc-fade" />
+          </div>
+          <button v-if="isLong" class="desc-toggle" type="button" @click="descExpanded = !descExpanded">
+            {{ descExpanded ? 'Свернуть ↑' : 'Читать полностью ↓' }}
+          </button>
 
           <div class="brand-stats">
             <div v-if="brand.productCount != null" class="bstat">
               <span class="bstat-v">{{ brand.productCount }}</span>
               <span class="bstat-l">{{ plural(brand.productCount, 'товар', 'товара', 'товаров') }}</span>
             </div>
-            <div v-if="brand.categoryCount != null" class="bstat">
+            <div v-if="brand.categoryCount != null" class="bstat bstat--sep">
               <span class="bstat-v">{{ brand.categoryCount }}</span>
               <span class="bstat-l">{{ plural(brand.categoryCount, 'категория', 'категории', 'категорий') }}</span>
             </div>
           </div>
-        </div>
-
-        <div v-if="brand.website" class="brand-hero-actions">
-          <a :href="brand.website" target="_blank" rel="noopener noreferrer" class="btn ghost site-btn">
-            <span class="site-ico">↗</span>
-            Сайт бренда
-          </a>
         </div>
       </div>
 
@@ -186,7 +195,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useApi } from 'src/api/useApi';
 import type { Brand, BrandCategory, Product, ProductSort } from 'src/types/api';
@@ -205,6 +214,7 @@ async function loadBrand() {
   brandLoading.value = true;
   try {
     brand.value = await api.brandBySlug(slug.value);
+    void checkDescHeight();
   } catch {
     brand.value = null;
   } finally {
@@ -268,6 +278,20 @@ function resetFilters() {
   page.value = 1;
 }
 
+/* ── Description accordion ── */
+const descEl = ref<HTMLElement | null>(null);
+const isLong = ref(false);
+const descExpanded = ref(false);
+
+async function checkDescHeight() {
+  descExpanded.value = false;
+  isLong.value = false;
+  await nextTick();
+  if (descEl.value) {
+    isLong.value = descEl.value.scrollHeight > 100;
+  }
+}
+
 /* ── Logo ── */
 const logoSrc = computed(() => {
   if (!brand.value?.logo) return undefined;
@@ -292,6 +316,11 @@ const pageButtons = computed<(number | '…')[]>(() => {
 });
 
 /* ── Helpers ── */
+function normalizeUrl(url: string | null | undefined): string {
+  if (!url) return '';
+  return /^https?:\/\//i.test(url) ? url : `https://${url}`;
+}
+
 function plural(n: number, a: string, b: string, c: string) {
   const m = n % 10, k = n % 100;
   if (k >= 11 && k <= 14) return c;
@@ -347,18 +376,18 @@ onMounted(() => {
 /* ── Hero ── */
 .brand-hero {
   display: flex;
-  align-items: center;
-  gap: 28px;
+  align-items: flex-start;
+  gap: 32px;
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 20px;
-  padding: 28px 32px;
+  border-radius: 24px;
+  padding: 36px 40px;
   margin: 20px 0 0;
-  flex-wrap: wrap;
+  box-shadow: 0 4px 24px rgba(37, 87, 230, 0.06);
 }
 .brand-hero--skeleton {
-  height: 140px;
-  border-radius: 20px;
+  height: 180px;
+  border-radius: 24px;
   background: linear-gradient(90deg, #f4f7fd 25%, #eaeffa 50%, #f4f7fd 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
@@ -367,36 +396,129 @@ onMounted(() => {
 @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
 .brand-hero-logo {
-  width: 88px;
-  height: 88px;
-  border-radius: 16px;
+  width: 140px;
+  height: 140px;
+  border-radius: 20px;
   background: var(--blue-50);
+  border: 1.5px solid var(--blue-100);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   overflow: hidden;
 }
-.hero-logo-img { width:100%; height:100%; object-fit:contain; padding:10px; }
-.hero-logo-letter { font-size:40px; font-weight:800; color:var(--blue-700); line-height:1; }
+.hero-logo-img { width: 100%; height: 100%; object-fit: contain; padding: 16px; }
+.hero-logo-letter {
+  font-size: 64px;
+  font-weight: 900;
+  color: var(--blue-700);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
 
-.brand-hero-body { flex:1; min-width:0; }
-.brand-hero-body h1 { font-size:36px; font-weight:800; letter-spacing:-0.02em; margin:0 0 8px; line-height:1.1; }
-.brand-desc { font-size:14.5px; color:var(--ink-2); line-height:1.55; margin:0 0 14px; max-width:640px; }
+.brand-hero-body { flex: 1; min-width: 0; padding-top: 4px; }
 
-.brand-stats { display:flex; gap:20px; flex-wrap:wrap; }
-.bstat { display:flex; align-items:baseline; gap:6px; }
-.bstat-v { font-size:22px; font-weight:800; color:var(--blue-700); letter-spacing:-0.01em; }
-.bstat-l { font-size:13px; color:var(--ink-3); font-weight:500; }
+.brand-hero-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+.brand-hero-top h1 {
+  font-size: 42px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin: 0;
+  line-height: 1.05;
+  color: var(--ink);
+}
 
-.brand-hero-actions { margin-left:auto; flex-shrink:0; }
-.site-btn { gap:8px; text-decoration:none; }
-.site-ico { font-size:15px; }
+.site-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 18px;
+  border-radius: 11px;
+  background: var(--blue-50);
+  color: var(--blue-700);
+  border: 1.5px solid var(--blue-100);
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.13s, border-color 0.13s;
+}
+.site-btn:hover {
+  background: var(--blue-100);
+  border-color: var(--blue-200);
+}
+
+.brand-desc-wrap {
+  position: relative;
+  margin-bottom: 12px;
+}
+.brand-desc-wrap.collapsed {
+  max-height: 100px;
+  overflow: hidden;
+}
+.brand-desc-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: linear-gradient(to bottom, transparent, #fff);
+  pointer-events: none;
+}
+.brand-desc {
+  font-size: 14.5px;
+  color: var(--ink-2);
+  line-height: 1.6;
+  margin: 0;
+  max-width: 640px;
+}
+.desc-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0 0 16px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--blue-600);
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.12s;
+}
+.desc-toggle:hover { opacity: 0.75; }
+
+.brand-stats {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+}
+.bstat {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 10px 20px 10px 0;
+}
+.bstat--sep {
+  padding-left: 20px;
+  border-left: 1.5px solid var(--line);
+}
+.bstat-v { font-size: 26px; font-weight: 900; color: var(--blue-700); letter-spacing: -0.02em; }
+.bstat-l { font-size: 13px; color: var(--ink-3); font-weight: 500; }
+
 .btn { display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:11px; font-weight:600; font-size:14px; font-family:inherit; cursor:pointer; transition:background .12s, border-color .12s; }
 .btn.ghost { background:#fff; color:var(--ink-2); border:1px solid var(--line); }
 .btn.ghost:hover { border-color:var(--blue-200); color:var(--blue-700); }
 
-.section-sep { height:1px; background:var(--line); margin:24px 0; }
+.section-sep { height: 1px; background: var(--line); margin: 28px 0; }
 
 /* ── Filter bar ── */
 .filterbar {
@@ -473,17 +595,23 @@ onMounted(() => {
 
 /* Responsive */
 @media (max-width: 1100px) { .pgrid:not(.list) { grid-template-columns:repeat(3,1fr); } }
-@media (max-width: 900px)  {
-  .brand-hero { padding:20px; }
-  .brand-hero-body h1 { font-size:28px; }
-  .pgrid:not(.list) { grid-template-columns:repeat(2,1fr); }
+@media (max-width: 900px) {
+  .brand-hero { padding: 24px; gap: 24px; }
+  .brand-hero-logo { width: 100px; height: 100px; }
+  .hero-logo-letter { font-size: 46px; }
+  .brand-hero-top h1 { font-size: 30px; }
+  .pgrid:not(.list) { grid-template-columns: repeat(2,1fr); }
 }
-@media (max-width: 600px)  {
-  .wrap { padding:0 14px; }
-  .brand-hero-logo { width:64px; height:64px; }
-  .hero-logo-letter { font-size:28px; }
-  .brand-hero-body h1 { font-size:24px; }
-  .pgrid:not(.list) { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-  .filter-search { width:140px; }
+@media (max-width: 600px) {
+  .wrap { padding: 0 14px; }
+  .brand-hero { flex-direction: column; align-items: center; text-align: center; padding: 24px 20px; gap: 20px; }
+  .brand-hero-logo { width: 96px; height: 96px; }
+  .hero-logo-letter { font-size: 44px; }
+  .brand-hero-top { flex-direction: column; align-items: center; gap: 12px; }
+  .brand-hero-top h1 { font-size: 28px; }
+  .brand-desc { text-align: left; }
+  .brand-stats { justify-content: center; }
+  .pgrid:not(.list) { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+  .filter-search { width: 140px; }
 }
 </style>

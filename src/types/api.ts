@@ -65,6 +65,7 @@ export type Product = {
   description?: string | null;
   price: string;
   isActive: boolean;
+  isHit: boolean;
   categoryId: number;
   unitId: number;
   brandId?: number | null;
@@ -135,6 +136,7 @@ export type ProductListQuery = {
   minPrice?: number;
   maxPrice?: number;
   inStock?: boolean;
+  isHit?: boolean;
   sort?: ProductSort;
   page?: number;
   pageSize?: number;

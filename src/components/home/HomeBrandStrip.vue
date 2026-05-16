@@ -17,22 +17,22 @@
       </div>
 
       <div v-else class="brands-grid">
-        <div
+        <router-link
           v-for="brand in brands"
           :key="brand.id"
+          :to="`/brands/${brand.slug}`"
           class="brand-card"
-          @click="go(brand.slug)"
         >
           <div v-if="brand.productCount != null" class="brand-card__count">
             {{ brand.productCount }}&thinsp;тов.
           </div>
           <div class="brand-card__name">{{ brand.name }}</div>
-        </div>
+        </router-link>
 
         <!-- Last cell: "Все бренды →" -->
-        <div class="brand-card brand-card--all" @click="router.push('/brands')">
+        <router-link to="/brands" class="brand-card brand-card--all">
           <div class="brand-card__all-link">Все бренды →</div>
-        </div>
+        </router-link>
       </div>
 
     </div>
@@ -41,11 +41,9 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
 import { useApi } from 'src/api/useApi';
 import type { Brand } from 'src/types/api';
 
-const router = useRouter();
 const api = useApi();
 
 const DISPLAY_COUNT = 11;
@@ -66,9 +64,6 @@ onMounted(async () => {
   }
 });
 
-function go(slug: string) {
-  void router.push({ path: `/brands/${slug}` });
-}
 </script>
 
 <style scoped lang="scss">
@@ -121,6 +116,7 @@ function go(slug: string) {
   border-radius: 12px;
   padding: 12px 14px 16px;
   cursor: pointer;
+  text-decoration: none;
   transition: border-color 0.15s, box-shadow 0.15s;
   position: relative;
   min-height: 80px;

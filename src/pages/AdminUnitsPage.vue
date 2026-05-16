@@ -23,6 +23,17 @@
       :loading="loading"
       :pagination="{ rowsPerPage: 20 }"
     >
+      <template #body-cell-isActive="p">
+        <q-td :props="p" class="text-center">
+          <q-toggle
+            :model-value="p.row.isActive"
+            color="primary"
+            :loading="togglingActive === p.row.id"
+            @update:model-value="toggleActive(p.row)"
+          />
+        </q-td>
+      </template>
+
       <template #body-cell-actions="p">
         <q-td :props="p" class="text-right">
           <q-btn flat dense icon="edit" @click="openEdit(p.row)" />
@@ -70,6 +81,23 @@ const loading = ref(false);
 const error = ref<string | null>(null);
 const saving = ref(false);
 const rows = ref<Unit[]>([]);
+const togglingActive = ref<number | null>(null);
+
+async function toggleActive(u: Unit) {
+  if (togglingActive.value === u.id) return;
+  togglingActive.value = u.id;
+  const newVal = !u.isActive;
+  const row = rows.value.find((r) => r.id === u.id);
+  if (row) row.isActive = newVal;
+  try {
+    await api.adminUpdateUnit(u.id, { isActive: newVal });
+  } catch (e) {
+    if (row) row.isActive = !newVal;
+    Notify.create({ type: 'negative', message: e instanceof Error ? e.message : 'Ошибка' });
+  } finally {
+    togglingActive.value = null;
+  }
+}
 
 const columns: QTableColumn[] = [
   { name: 'id', label: 'ID', field: 'id', align: 'left', sortable: true },

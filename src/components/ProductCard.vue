@@ -103,10 +103,8 @@ const brandText = computed(() =>
 
 /* ── Badge ── */
 const badge = computed<{ label: string; type: string } | null>(() => {
-  const inv = props.product.inventory;
-  if (!inv) return null;
-  if (inv.status === 'IN_STOCK') return { label: 'ХИТ', type: 'hit' };
-  if (inv.status === 'ON_ORDER') return { label: 'НОВИНКА', type: 'new' };
+  if (props.product.isHit) return { label: 'ХИТ', type: 'hit' };
+  if (props.product.inventory?.status === 'ON_ORDER') return { label: 'НОВИНКА', type: 'new' };
   return null;
 });
 

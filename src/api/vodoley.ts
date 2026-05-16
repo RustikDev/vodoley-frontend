@@ -164,6 +164,11 @@ export function createVodoleyApi(axios: AxiosInstance) {
       return data;
     },
 
+    async adminSetProductHit(id: number, isHit: boolean) {
+      const { data } = await axios.patch<Product>(`/admin/products/${id}/hit`, { isHit });
+      return data;
+    },
+
     async adminGetInventory(productId: number) {
       const { data } = await axios.get<Inventory | null>(`/admin/products/${productId}/inventory`);
       return data;

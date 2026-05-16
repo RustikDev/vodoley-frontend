@@ -41,6 +41,28 @@
           <div v-else class="text-grey-7">—</div>
         </q-td>
       </template>
+      <template #body-cell-isActive="p">
+        <q-td :props="p" class="text-center">
+          <q-toggle
+            :model-value="p.row.isActive"
+            color="primary"
+            :loading="togglingActive === p.row.id"
+            @update:model-value="toggleActive(p.row)"
+          />
+        </q-td>
+      </template>
+
+      <template #body-cell-isHit="p">
+        <q-td :props="p" class="text-center">
+          <q-toggle
+            :model-value="p.row.isHit"
+            color="orange"
+            :loading="togglingHit === p.row.id"
+            @update:model-value="toggleHit(p.row)"
+          />
+        </q-td>
+      </template>
+
       <template #body-cell-actions="p">
         <q-td :props="p" class="text-right">
           <q-btn flat dense icon="edit" @click="openEdit(p.row)" />
@@ -201,6 +223,7 @@ const columns: QTableColumn[] = [
   { name: 'category', label: 'Категория', field: 'categoryId', align: 'left' },
   { name: 'unit', label: 'Ед.', field: 'unitId', align: 'left' },
   { name: 'isActive', label: 'Активен', field: 'isActive', align: 'left' },
+  { name: 'isHit', label: 'Хит', field: 'isHit', align: 'center' },
   { name: 'inventory', label: 'Остаток', field: 'inventory', align: 'left' },
   { name: 'actions', label: '', field: 'actions', align: 'right' },
 ];
@@ -417,6 +440,42 @@ async function save() {
     throw e;
   } finally {
     saving.value = false;
+  }
+}
+
+const togglingActive = ref<number | null>(null);
+
+async function toggleActive(p: Product) {
+  if (togglingActive.value === p.id) return;
+  togglingActive.value = p.id;
+  const newVal = !p.isActive;
+  const row = allRows.value.find((r) => r.id === p.id);
+  if (row) row.isActive = newVal;
+  try {
+    await api.adminUpdateProduct(p.id, { isActive: newVal });
+  } catch (e) {
+    if (row) row.isActive = !newVal;
+    Notify.create({ type: 'negative', message: e instanceof Error ? e.message : 'Ошибка' });
+  } finally {
+    togglingActive.value = null;
+  }
+}
+
+const togglingHit = ref<number | null>(null);
+
+async function toggleHit(p: Product) {
+  if (togglingHit.value === p.id) return;
+  togglingHit.value = p.id;
+  const newVal = !p.isHit;
+  const row = allRows.value.find((r) => r.id === p.id);
+  if (row) row.isHit = newVal;
+  try {
+    await api.adminSetProductHit(p.id, newVal);
+  } catch (e) {
+    if (row) row.isHit = !newVal;
+    Notify.create({ type: 'negative', message: e instanceof Error ? e.message : 'Ошибка' });
+  } finally {
+    togglingHit.value = null;
   }
 }
 
