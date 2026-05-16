@@ -1,6 +1,6 @@
 ﻿<template>
   <q-page class="q-pa-md vds-container">
-    <div class="row items-center justify-between q-mb-md">
+    <div class="row wrap items-center justify-between q-mb-md" style="gap:8px">
       <div class="text-h6">Единицы измерения</div>
       <div class="row q-gutter-sm">
         <q-btn outline icon="refresh" label="Обновить" :loading="loading" @click="reload" />
@@ -8,10 +8,16 @@
       </div>
     </div>
 
-    <div class="row q-gutter-sm q-mb-md items-center">
-      <q-input v-model.trim="search" dense outlined clearable placeholder="Поиск по названию" style="width:280px" />
-      <q-toggle v-model="filterActive" label="Только активные" />
-      <div class="text-caption text-grey-6">Найдено: {{ filteredRows.length }}</div>
+    <div class="row wrap q-col-gutter-sm q-mb-md items-center">
+      <div class="col-12 col-sm-auto">
+        <q-input v-model.trim="search" dense outlined clearable placeholder="Поиск по названию" style="min-width:220px" />
+      </div>
+      <div class="col-12 col-sm-auto">
+        <q-toggle v-model="filterActive" label="Только активные" />
+      </div>
+      <div class="col-12 col-sm-auto">
+        <div class="text-caption text-grey-6">Найдено: {{ filteredRows.length }}</div>
+      </div>
     </div>
 
     <VdsErrorState

@@ -337,7 +337,7 @@ const topBrandsChart = computed(() => {
 <style scoped>
 .dashboard { background: #f6f8fd; min-height: 100vh; }
 
-.dash-header { display: flex; align-items: flex-start; justify-content: space-between; }
+.dash-header { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px; }
 .dash-title { font-size: 26px; font-weight: 800; color: #0e1430; letter-spacing: -0.4px; }
 .dash-sub { font-size: 14px; color: #6b7596; margin-top: 2px; }
 
