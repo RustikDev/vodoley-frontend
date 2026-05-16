@@ -46,10 +46,16 @@ export type ProductImage = {
   sortOrder: number;
 };
 
+export type InventoryStatusOption = {
+  value: InventoryStatus;
+  label: string;
+};
+
 export type Inventory = {
   productId?: number;
   quantity: number;
   status: InventoryStatus;
+  statusLabel?: string;
 };
 
 export type Product = {
@@ -61,10 +67,12 @@ export type Product = {
   isActive: boolean;
   categoryId: number;
   unitId: number;
+  brandId?: number | null;
   images: ProductImage[];
   inventory: Inventory | null;
   unit?: Unit;
   category?: Category;
+  brand?: BrandShort | null;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -76,12 +84,53 @@ export type Paginated<T> = {
   pageSize: number;
 };
 
+export type BrandShort = {
+  id: number;
+  name: string;
+  slug: string;
+  logo: string | null;
+};
+
+export type Brand = {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string | null;
+  logo?: string | null;
+  website?: string | null;
+  isActive: boolean;
+  sortOrder: number;
+  productCount?: number;
+  categoryCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type BrandCategory = {
+  id: number;
+  name: string;
+  slug: string;
+  productCount: number;
+};
+
+export type CreateBrandRequest = {
+  name: string;
+  slug: string;
+  description?: string;
+  logo?: string;
+  website?: string;
+  isActive?: boolean;
+  sortOrder?: number;
+};
+export type UpdateBrandRequest = Partial<CreateBrandRequest>;
+
 export type ProductSort = 'price_asc' | 'price_desc' | 'newest';
 
 export type ProductListQuery = {
   q?: string;
   categoryId?: number;
   includeChildren?: boolean;
+  brandId?: number;
   unitId?: number;
   minPrice?: number;
   maxPrice?: number;
@@ -123,7 +172,6 @@ export type CreateUnitRequest = {
   name: string;
   shortName: string;
   isActive?: boolean;
-  sortOrder?: number;
 };
 export type UpdateUnitRequest = Partial<CreateUnitRequest>;
 
@@ -134,6 +182,7 @@ export type CreateProductRequest = {
   price: number;
   categoryId: number;
   unitId: number;
+  brandId?: number;
   isActive?: boolean;
   inventory?: Partial<Pick<Inventory, 'quantity' | 'status'>>;
 };

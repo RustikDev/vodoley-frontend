@@ -25,6 +25,10 @@
           <q-item-section avatar><q-icon name="account_tree" /></q-item-section>
           <q-item-section>Категории</q-item-section>
         </q-item>
+        <q-item clickable to="/admin/brands">
+          <q-item-section avatar><q-icon name="label" /></q-item-section>
+          <q-item-section>Бренды</q-item-section>
+        </q-item>
         <q-item clickable to="/admin/products">
           <q-item-section avatar><q-icon name="inventory_2" /></q-item-section>
           <q-item-section>Товары</q-item-section>

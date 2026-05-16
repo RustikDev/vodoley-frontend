@@ -100,8 +100,8 @@
                 <span>{{ auth.token ? 'Кабинет' : 'Войти' }}</span>
               </router-link>
 
-              <router-link to="/estimate" class="hdr-action-btn">
-                <q-icon name="bookmark_border" size="22px" />
+              <router-link to="/favorites" class="hdr-action-btn">
+                <q-icon name="favorite_border" size="22px" />
                 <span>Избранное</span>
               </router-link>
 
@@ -127,11 +127,8 @@
             </router-link>
 
             <q-btn flat no-caps to="/catalog?sale=true"    class="cnav-link">Акции</q-btn>
+            <q-btn flat no-caps to="/brands"               class="cnav-link">Бренды</q-btn>
             <q-btn flat no-caps to="/about"                class="cnav-link">Доставка</q-btn>
-            <q-btn flat no-caps to="/about"                class="cnav-link">Оплата</q-btn>
-            <q-btn flat no-caps to="/about"                class="cnav-link">Профи-клиентам</q-btn>
-            <q-btn flat no-caps to="/catalog?inStock=true" class="cnav-link">В наличии</q-btn>
-            <q-btn flat no-caps to="/about"                class="cnav-link">Возврат</q-btn>
             <q-btn flat no-caps to="/about"                class="cnav-link">О магазине</q-btn>
 
             <div class="cnav-spacer" />

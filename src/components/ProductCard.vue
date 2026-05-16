@@ -9,8 +9,8 @@
       </div>
 
       <!-- Favourite -->
-      <button class="pcard__fav" @click.stop>
-        <q-icon name="favorite_border" size="18px" />
+      <button class="pcard__fav" :class="{ 'pcard__fav--active': isFav }" @click.stop="fav.toggle(product.id)">
+        <q-icon :name="isFav ? 'favorite' : 'favorite_border'" size="18px" />
       </button>
 
       <!-- Real image -->
@@ -57,10 +57,14 @@ import { useRouter } from 'vue-router';
 import type { Product } from 'src/types/api';
 import { useApi } from 'src/api/useApi';
 import { formatPriceRub } from 'src/utils/format';
+import { useFavoritesStore } from 'src/stores/favorites';
 
 const props = defineProps<{ product: Product }>();
 const router = useRouter();
 const api = useApi();
+const fav = useFavoritesStore();
+
+const isFav = computed(() => fav.has(props.product.id));
 
 /* ── Image ── */
 const imageUrl = computed(() => {

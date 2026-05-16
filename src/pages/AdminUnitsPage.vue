@@ -44,7 +44,6 @@
           <q-input v-model.trim="form.name" outlined label="Название" />
           <q-input v-model.trim="form.shortName" outlined label="Короткое" />
           <q-toggle v-model="form.isActive" label="Активна" />
-          <q-input v-model.number="form.sortOrder" outlined type="number" label="Порядок" />
         </q-card-section>
 
         <q-card-actions align="right">
@@ -87,7 +86,6 @@ const form = reactive({
   name: '',
   shortName: '',
   isActive: true,
-  sortOrder: 0,
 });
 
 async function reload() {
@@ -108,7 +106,6 @@ function openCreate() {
   form.name = '';
   form.shortName = '';
   form.isActive = true;
-  form.sortOrder = 0;
   dialogOpen.value = true;
 }
 
@@ -117,7 +114,6 @@ function openEdit(u: Unit) {
   form.name = u.name;
   form.shortName = u.shortName;
   form.isActive = u.isActive;
-  form.sortOrder = u.sortOrder;
   dialogOpen.value = true;
 }
 
@@ -134,14 +130,12 @@ async function save() {
         name: form.name,
         shortName: form.shortName,
         isActive: form.isActive,
-        sortOrder: form.sortOrder,
       });
     } else {
       await api.adminCreateUnit({
         name: form.name,
         shortName: form.shortName,
         isActive: form.isActive,
-        sortOrder: form.sortOrder,
       });
     }
 

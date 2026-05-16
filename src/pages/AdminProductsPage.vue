@@ -36,7 +36,7 @@
       <template #body-cell-inventory="p">
         <q-td :props="p">
           <div v-if="p.row.inventory" class="text-body2">
-            {{ p.row.inventory.status }} • {{ p.row.inventory.quantity }}
+            {{ p.row.inventory.statusLabel ?? p.row.inventory.status }} • {{ p.row.inventory.quantity }}
           </div>
           <div v-else class="text-grey-7">—</div>
         </q-td>
@@ -58,7 +58,7 @@
           <div class="text-h6">{{ form.id ? 'Редактирование' : 'Создание' }}</div>
         </q-card-section>
 
-        <q-card-section class="q-gutter-md">
+        <q-card-section class="q-pt-none">
           <div class="row q-col-gutter-md">
             <div class="col-12 col-md-6">
               <q-input v-model.trim="form.name" outlined label="Название" />
@@ -93,6 +93,17 @@
               />
             </div>
             <div class="col-12 col-md-4">
+              <q-select
+                v-model="form.brandId"
+                outlined
+                emit-value
+                map-options
+                clearable
+                label="Бренд"
+                :options="brandOptions"
+              />
+            </div>
+            <div class="col-12 col-md-4">
               <q-toggle v-model="form.isActive" label="Активен" />
             </div>
 
@@ -103,6 +114,10 @@
               <q-select
                 v-model="form.inventoryStatus"
                 outlined
+                emit-value
+                map-options
+                option-value="value"
+                option-label="label"
                 label="Статус"
                 :options="inventoryStatusOptions"
               />
@@ -111,24 +126,16 @@
             <div class="col-12" v-if="form.id && form.existingImages.length > 0">
               <div class="text-caption text-grey-7 q-mb-xs">Текущие изображения</div>
               <div class="row q-col-gutter-sm">
-                <div v-for="img in form.existingImages" :key="img.id" class="col-auto" style="position:relative">
+                <div v-for="img in form.existingImages" :key="img.id" class="col-auto img-thumb-wrap">
                   <q-img
                     :src="api.toAbsoluteUploadUrl(img.url)"
-                    style="width:80px;height:80px;border-radius:6px"
+                    class="img-thumb"
                     :ratio="1"
-                  >
-                    <div class="absolute-top-right">
-                      <q-btn
-                        round dense flat
-                        icon="close"
-                        size="xs"
-                        color="negative"
-                        style="background:rgba(0,0,0,.45)"
-                        @click="deleteExistingImage(img.id)"
-                      />
-                    </div>
-                    <q-badge v-if="img.isMain" color="primary" floating label="Гл." />
-                  </q-img>
+                  />
+                  <q-badge v-if="img.isMain" color="primary" class="img-thumb-main-badge" label="Гл." />
+                  <button class="img-thumb-remove" type="button" @click="deleteExistingImage(img.id)">
+                    <q-icon name="close" size="12px" />
+                  </button>
                 </div>
               </div>
             </div>
@@ -163,7 +170,7 @@ import { Dialog, Notify } from 'quasar';
 import type { QTableColumn } from 'quasar';
 import { useApi } from 'src/api/useApi';
 import { formatPriceRub } from 'src/utils/format';
-import type { Category, InventoryStatus, Product, ProductImage, Unit } from 'src/types/api';
+import type { Brand, Category, InventoryStatus, InventoryStatusOption, Product, ProductImage, Unit, UpdateProductRequest } from 'src/types/api';
 
 const api = useApi();
 
@@ -200,6 +207,7 @@ const columns: QTableColumn[] = [
 
 const categories = ref<Category[]>([]);
 const units = ref<Unit[]>([]);
+const brands = ref<Brand[]>([]);
 
 const categoryOptions = computed(() =>
   categories.value
@@ -213,6 +221,13 @@ const unitOptions = computed(() =>
     .sort((a, b) => a.label.localeCompare(b.label, 'ru')),
 );
 
+const brandOptions = computed(() => [
+  { label: 'Без бренда', value: null },
+  ...brands.value
+    .map((b) => ({ label: b.name, value: b.id }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'ru')),
+]);
+
 function categoryName(id: number) {
   return categories.value.find((c) => c.id === id)?.name ?? String(id);
 }
@@ -222,7 +237,7 @@ function unitName(id: number) {
   return u ? u.shortName : String(id);
 }
 
-const inventoryStatusOptions: InventoryStatus[] = ['IN_STOCK', 'OUT_OF_STOCK', 'ON_ORDER'];
+const inventoryStatusOptions = ref<InventoryStatusOption[]>([]);
 
 type CreateMultipartPayload = {
   name: string;
@@ -230,6 +245,7 @@ type CreateMultipartPayload = {
   price: number;
   categoryId: number;
   unitId: number;
+  brandId?: number;
   isActive?: boolean;
   description?: string;
   inventoryQuantity?: number;
@@ -245,6 +261,7 @@ type ProductForm = {
   price: number;
   categoryId: number | null;
   unitId: number | null;
+  brandId: number | null;
   isActive: boolean;
   inventoryQuantity: number | null;
   inventoryStatus: InventoryStatus;
@@ -261,6 +278,7 @@ const form = reactive<ProductForm>({
   price: 0,
   categoryId: null as number | null,
   unitId: null as number | null,
+  brandId: null as number | null,
   isActive: true,
   inventoryQuantity: null as number | null,
   inventoryStatus: 'IN_STOCK',
@@ -269,7 +287,12 @@ const form = reactive<ProductForm>({
 });
 
 async function loadRefs() {
-  [categories.value, units.value] = await Promise.all([api.adminCategoriesList(), api.adminUnitsList()]);
+  [categories.value, units.value, brands.value, inventoryStatusOptions.value] = await Promise.all([
+    api.adminCategoriesList(),
+    api.adminUnitsList(),
+    api.adminBrandsList(),
+    api.inventoryStatuses(),
+  ]);
 }
 
 async function reload() {
@@ -295,6 +318,7 @@ function openCreate() {
   form.price = 0;
   form.categoryId = categoryOptions.value[0]?.value ?? null;
   form.unitId = unitOptions.value[0]?.value ?? null;
+  form.brandId = null;
   form.isActive = true;
   form.inventoryQuantity = null;
   form.inventoryStatus = 'IN_STOCK';
@@ -311,6 +335,7 @@ function openEdit(p: Product) {
   form.price = parseFloat(p.price);
   form.categoryId = p.categoryId;
   form.unitId = p.unitId;
+  form.brandId = p.brandId ?? null;
   form.isActive = p.isActive;
   form.inventoryQuantity = p.inventory?.quantity ?? null;
   form.inventoryStatus = p.inventory?.status ?? 'IN_STOCK';
@@ -339,15 +364,17 @@ async function save() {
   saving.value = true;
   try {
     if (form.id) {
-      await api.adminUpdateProduct(form.id, {
+      const updatePayload: UpdateProductRequest = {
         name: form.name,
         slug: form.slug,
         description: form.description,
         price: form.price,
-        categoryId: form.categoryId,
-        unitId: form.unitId,
+        categoryId: form.categoryId ?? undefined,
+        unitId: form.unitId ?? undefined,
         isActive: form.isActive,
-      });
+      };
+      if (form.brandId != null) updatePayload.brandId = form.brandId;
+      await api.adminUpdateProduct(form.id, updatePayload);
 
       const origInventory = allRows.value.find((p) => p.id === form.id)?.inventory;
       const invChanged =
@@ -364,7 +391,7 @@ async function save() {
         await api.adminUploadProductImage(form.id, f);
       }
     } else {
-            const payload: CreateMultipartPayload = {
+      const payload: CreateMultipartPayload = {
         name: form.name,
         slug: form.slug,
         price: form.price,
@@ -377,6 +404,7 @@ async function save() {
 
       if (form.description && form.description.trim().length > 0) payload.description = form.description;
       if (form.inventoryQuantity != null) payload.inventoryQuantity = form.inventoryQuantity;
+      if (form.brandId != null) payload.brandId = form.brandId;
 
       await api.adminCreateProductMultipart(payload);
     }
@@ -422,6 +450,50 @@ onMounted(async () => {
   await reload();
 });
 </script>
+
+<style scoped>
+.img-thumb-wrap {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.img-thumb {
+  width: 80px;
+  height: 80px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.img-thumb-remove {
+  position: absolute;
+  top: 8px;
+  right: -9px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  background: #e53935;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  transition: background 0.15s;
+}
+
+.img-thumb-remove:hover {
+  background: #b71c1c;
+}
+
+.img-thumb-main-badge {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+}
+</style>
 
 
 
