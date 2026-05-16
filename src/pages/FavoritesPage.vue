@@ -91,14 +91,6 @@
             <button class="sort" type="button">
               Цена <span class="sort-arrow">↕</span>
             </button>
-            <div class="view-toggle" role="group" aria-label="Вид">
-              <button type="button" :class="{ on: viewMode === 'grid' }" @click="viewMode = 'grid'" aria-label="Сетка">
-                ▦
-              </button>
-              <button type="button" :class="{ on: viewMode === 'list' }" @click="viewMode = 'list'" aria-label="Список">
-                ≡
-              </button>
-            </div>
           </div>
         </div>
 
@@ -128,73 +120,12 @@
               </div>
             </div>
 
-            <div class="pgrid" :class="{ list: viewMode === 'list' }">
-              <article
+            <div class="pgrid">
+              <ProductCard
                 v-for="p in group.items"
                 :key="p.id"
-                class="pcard"
-                :class="{ selected: selectedIds.has(p.id) }"
-                @click="goProduct(p.id)"
-              >
-                <button
-                  class="fav"
-                  type="button"
-                  title="Убрать из избранного"
-                  @click.stop="fav.remove(p.id)"
-                >
-                  ♥
-                </button>
-
-                <button
-                  class="sel-btn"
-                  type="button"
-                  title="Выбрать"
-                  @click.stop="toggleSelect(p.id)"
-                >
-                  <span class="sel-check">{{ selectedIds.has(p.id) ? '✓' : '' }}</span>
-                </button>
-
-                <div class="pimg">
-                  <div v-if="cardBadge(p)" class="pbadges">
-                    <span class="badge-tag" :class="cardBadge(p)!.type">{{ cardBadge(p)!.label }}</span>
-                  </div>
-                  <q-img v-if="productImageUrl(p)" :src="productImageUrl(p)!" :ratio="1" />
-                  <div v-else class="pimg-ph">{{ p.category?.name ?? p.name.split(' ')[0] ?? '' }}</div>
-                </div>
-
-                <div class="pbrand">{{ (p.category?.name ?? 'Категория').toUpperCase() }}</div>
-                <h4>{{ p.name }}</h4>
-
-                <div class="pspecs">
-                  <span v-if="p.unit?.shortName">{{ p.unit.shortName }}</span>
-                  <span v-if="p.inventory?.quantity">{{ p.inventory.quantity }} {{ p.unit?.shortName ?? 'шт' }}</span>
-                </div>
-
-                <div class="pstock" :class="stockClass(p)">
-                  <span class="gd" />
-                  {{ stockLabel(p) }}
-                </div>
-
-                <div class="prow">
-                  <div class="pprice">
-                    {{ priceRub(p.price) }}
-                    <span class="u">₽</span>
-                  </div>
-
-                  <button
-                    class="add"
-                    :class="{ out: isOutOfStock(p) }"
-                    type="button"
-                    @click.stop="addToEstimate(p)"
-                  >
-                    + В смету
-                  </button>
-                </div>
-
-                <div v-if="isLowStock(p)" class="nudge on">
-                  Осталось мало — успейте заказать
-                </div>
-              </article>
+                :product="p"
+              />
             </div>
           </section>
         </div>
@@ -217,14 +148,13 @@
 <script setup lang="ts">
 import { Notify } from 'quasar';
 import { computed, onMounted, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
 import { useApi } from 'src/api/useApi';
 import type { Product } from 'src/types/api';
 import { useEstimateStore } from 'src/stores/estimate';
 import { useFavoritesStore } from 'src/stores/favorites';
+import ProductCard from 'src/components/ProductCard.vue';
 
 const api = useApi();
-const router = useRouter();
 const fav = useFavoritesStore();
 const estimate = useEstimateStore();
 
@@ -236,7 +166,6 @@ type GroupKey = `cat:${number}` | 'cat:none';
 type FilterKey = 'all' | GroupKey;
 
 const filterKey = ref<FilterKey>('all');
-const viewMode = ref<'grid' | 'list'>('grid');
 const selectedIds = ref(new Set<number>());
 
 function isOutOfStock(p: Product) {
@@ -246,70 +175,8 @@ function isOutOfStock(p: Product) {
   return typeof qty === 'number' && qty <= 0;
 }
 
-function isLowStock(p: Product) {
-  if (isOutOfStock(p)) return false;
-  const qty = p.inventory?.quantity;
-  return typeof qty === 'number' && qty > 0 && qty < 5;
-}
-
-function stockClass(p: Product) {
-  if (isOutOfStock(p)) return 'out';
-  const qty = p.inventory?.quantity;
-  if (typeof qty === 'number' && qty > 0 && qty < 5) return 'low';
-  return '';
-}
-
-function stockLabel(p: Product) {
-  if (isOutOfStock(p)) return 'Нет в наличии';
-  const status = p.inventory?.status;
-  if (status === 'ON_ORDER') return 'Под заказ';
-  return 'В наличии';
-}
-
-function cardBadge(p: Product): { label: string; type: string } | null {
-  if (isOutOfStock(p)) return { label: 'НЕТ', type: 'out' };
-  const status = p.inventory?.status;
-  if (status === 'ON_ORDER') return { label: 'ЗАКАЗ', type: 'new' };
-  const qty = p.inventory?.quantity;
-  if (typeof qty === 'number' && qty > 0 && qty < 5) return { label: 'МАЛО', type: 'sale' };
-  return null;
-}
-
-function priceRub(price: unknown) {
-  const n = Number(price);
-  if (!Number.isFinite(n)) return '—';
-  return Math.round(n).toLocaleString('ru-RU');
-}
-
-function productImageUrl(p: Product) {
-  const imgs = p.images ?? [];
-  const img = imgs.find((i) => i.isMain) ?? imgs[0];
-  if (!img?.url) return null;
-  return img.url.startsWith('http') ? img.url : api.toAbsoluteUploadUrl(img.url);
-}
-
-function goProduct(id: number) {
-  void router.push(`/product/${id}`);
-}
-
-function toggleSelect(id: number) {
-  const next = new Set(selectedIds.value);
-  if (next.has(id)) next.delete(id);
-  else next.add(id);
-  selectedIds.value = next;
-}
-
 function clearSelection() {
   selectedIds.value = new Set();
-}
-
-function addToEstimate(p: Product) {
-  if (isOutOfStock(p)) {
-    Notify.create({ type: 'warning', message: 'Нет в наличии — добавлять в смету нельзя' });
-    return;
-  }
-  estimate.addProduct(p, 1);
-  Notify.create({ type: 'positive', message: 'Добавлено в смету' });
 }
 
 function addCategoryToEstimate(group: Group) {
@@ -478,9 +345,9 @@ const categoryChips = computed(() =>
 .pagehead p { font-size:15px; color:var(--ink-2); max-width:680px; line-height:1.55; margin:0; }
 .head-actions { display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap; }
 
-.btn { display:inline-flex; align-items:center; gap:8px; padding:11px 16px; border-radius:11px; font-weight:600; font-size:14px; transition:background .12s, color .12s, border-color .12s; }
-.btn.primary { background:var(--blue-600); color:#fff; }
-.btn.primary:hover { background:var(--blue-700); }
+.btn { display:inline-flex; align-items:center; gap:8px; padding:11px 16px; border-radius:11px; font-weight:600; font-size:14px; border:none; cursor:pointer; transition:background .12s, color .12s, border-color .12s; }
+.btn.primary { background:#2557e6; color:#fff; }
+.btn.primary:hover { background:#1a45c9; }
 .btn.danger { background:#fff; color:var(--red-600); border:1px solid #f4d3d3; }
 .btn.danger:hover { background:#fde8e8; }
 .btn.ghost { background:#fff; color:var(--ink-2); border:1px solid var(--line); }
@@ -509,10 +376,6 @@ const categoryChips = computed(() =>
 .sort { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:var(--ink-2); padding:7px 12px; border-radius:8px; border:1px solid var(--line); background:#fff; cursor:pointer; }
 .sort:hover { border-color:var(--blue-200); }
 .sort-arrow { color:var(--ink-3); }
-.view-toggle { display:inline-flex; gap:2px; background:#f4f7fd; padding:3px; border-radius:9px; }
-.view-toggle button { padding:6px 10px; border-radius:6px; color:var(--ink-3); }
-.view-toggle button.on { background:#fff; color:var(--blue-700); box-shadow:0 1px 3px rgba(0,0,0,0.06); }
-
 .catsec { margin-bottom:36px; scroll-margin-top:160px; }
 .catsec-head { display:flex; align-items:center; justify-content:space-between; padding:0 4px 14px; gap:16px; flex-wrap:wrap; }
 .catsec-title { display:inline-flex; align-items:center; gap:14px; flex-wrap:wrap; }
@@ -520,63 +383,12 @@ const categoryChips = computed(() =>
 .catsec-title h2 { font-size:24px; font-weight:800; letter-spacing:-0.02em; margin:0; }
 .catsec-title .ccount { font-family:"JetBrains Mono",ui-monospace,monospace; font-size:13px; color:var(--ink-3); font-weight:600; background:#fff; padding:3px 10px; border-radius:999px; border:1px solid var(--line); }
 .catsec-actions { display:flex; gap:8px; align-items:center; }
-.ica { display:inline-flex; align-items:center; gap:6px; color:var(--ink-3); font-size:13px; font-weight:600; padding:6px 10px; border-radius:8px; }
-.ica:hover { background:var(--blue-50); color:var(--blue-700); }
-.ica.danger:hover { background:#fde8e8; color:var(--red-600); }
+.ica { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; padding:7px 12px; border-radius:8px; background:#2557e6; color:#fff; border:none; cursor:pointer; transition:background .12s; }
+.ica:hover { background:#1a45c9; }
+.ica.danger { background:#fff0f0; color:#d63a3a; border:1px solid #f4d3d3; }
+.ica.danger:hover { background:#fde8e8; border-color:#f0b8b8; }
 
 .pgrid { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; }
-.pgrid.list { grid-template-columns:1fr; }
-
-.pcard { background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px; position:relative; overflow:hidden; transition:border-color .15s,box-shadow .15s,transform .15s; display:flex; flex-direction:column; cursor:pointer; }
-.pcard:hover { border-color:var(--blue-200); box-shadow:0 18px 32px -22px rgba(28,68,194,0.35); }
-.pcard.selected { border-color:var(--blue-500); box-shadow:0 0 0 2px rgba(37,87,230,0.18); }
-
-.pimg { aspect-ratio:1/1; border-radius:11px; overflow:hidden; position:relative; background:#f4f7fd; margin-bottom:14px; display:flex; align-items:center; justify-content:center; }
-.pimg-ph { padding:10px 12px; text-align:center; font-size:14px; font-weight:700; color:rgba(14,20,48,0.28); }
-
-.pbadges { position:absolute; top:10px; left:10px; display:flex; gap:6px; z-index:2; }
-.badge-tag { font-size:11px; font-weight:700; padding:4px 8px; border-radius:6px; letter-spacing:0.02em; }
-.badge-tag.hit { background:var(--yellow); color:#221700; }
-.badge-tag.new { background:var(--blue-600); color:#fff; }
-.badge-tag.sale { background:var(--red-600); color:#fff; }
-.badge-tag.out { background:#f1f4fb; color:var(--ink-2); }
-
-.fav { position:absolute; top:10px; right:10px; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.94); display:grid; place-items:center; color:var(--red-600); font-size:16px; line-height:1; z-index:3; }
-.fav:hover { background:#fff; }
-
-.sel-btn { position:absolute; top:10px; left:10px; width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,0.9); display:grid; place-items:center; font-size:13px; font-weight:700; z-index:4; opacity:0; transition:opacity .15s; border:1.5px solid var(--line); color:var(--blue-700); }
-.pcard:hover .sel-btn,
-.pcard.selected .sel-btn { opacity:1; }
-.pcard.selected .sel-btn { background:var(--blue-600); color:#fff; border-color:var(--blue-600); }
-.sel-check { line-height:1; }
-
-.pbrand { font-size:11px; font-weight:600; color:var(--ink-3); letter-spacing:0.04em; text-transform:uppercase; }
-.pcard h4 { font-size:15px; font-weight:600; line-height:1.35; margin:6px 0 0; letter-spacing:-0.005em; min-height:40px; }
-.pspecs { display:flex; gap:6px; flex-wrap:wrap; margin:10px 0 12px; }
-.pspecs span { font-size:11px; color:var(--ink-2); background:#f1f4fb; padding:3px 8px; border-radius:6px; }
-.pstock { display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--green-700); font-weight:600; }
-.pstock .gd { width:6px; height:6px; border-radius:50%; background:var(--green-700); }
-.pstock.out { color:var(--red-600); }
-.pstock.out .gd { background:var(--red-600); }
-.pstock.low { color:#a77b00; }
-.pstock.low .gd { background:#e0a30b; }
-.prow { margin-top:auto; display:flex; align-items:end; justify-content:space-between; padding-top:14px; gap:10px; }
-.pprice { font-size:22px; font-weight:800; letter-spacing:-0.01em; display:inline-flex; align-items:baseline; gap:4px; }
-.pprice .u { font-size:13px; color:var(--ink-3); font-weight:600; }
-.add { background:var(--blue-600); color:#fff; font-weight:700; font-size:13px; padding:10px 14px; border-radius:10px; display:inline-flex; align-items:center; gap:6px; }
-.add:hover { background:var(--blue-700); }
-.add.out { background:#f1f4fb; color:var(--ink-3); }
-
-.nudge { display:none; margin-top:10px; background:#fff6df; color:#7a5b00; font-size:12px; padding:8px 10px; border-radius:8px; }
-.nudge.on { display:block; }
-
-.pgrid.list .pcard { display:grid; grid-template-columns:128px 1fr auto; gap:18px; align-items:center; padding:14px; }
-.pgrid.list .pcard .pimg { aspect-ratio:1/1; margin:0; width:128px; }
-.pgrid.list .pcard h4 { min-height:0; }
-.pgrid.list .pcard .prow { flex-direction:column; align-items:flex-end; gap:8px; padding:0; }
-.pgrid.list .fav { top:10px; right:10px; }
-.pgrid.list .pbadges { top:8px; left:8px; }
-.pgrid.list .sel-btn { top:10px; left:10px; }
 
 /* Actionbar */
 .actionbar {
@@ -611,13 +423,14 @@ const categoryChips = computed(() =>
 
 @media (max-width: 900px) {
   .pagehead { grid-template-columns:1fr; }
-  .summary { grid-template-columns:1fr; }
+  .summary { grid-template-columns:1fr 1fr; }
   .pgrid { grid-template-columns:repeat(2,1fr); }
 }
 
 @media (max-width: 600px) {
   .wrap { padding:0 14px; }
   .pagehead h1 { font-size:32px; }
+  .summary { grid-template-columns:1fr; }
   .pgrid { grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px; }
 }
 </style>

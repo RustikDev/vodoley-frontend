@@ -41,10 +41,19 @@
         <span v-if="stockQty" class="pcard__stock-qty">&nbsp;·&nbsp;{{ stockQty }}</span>
       </div>
 
-      <!-- Price -->
-      <div class="pcard__price-row">
-        <span class="pcard__price">{{ formatPriceRub(product.price) }}</span>
-        <span v-if="product.unit" class="pcard__unit">р&nbsp;/&nbsp;{{ product.unit.shortName }}</span>
+      <!-- Price + estimate -->
+      <div class="pcard__bottom">
+        <div class="pcard__price-row">
+          <span class="pcard__price">{{ formatPriceRub(product.price) }}</span>
+          <span v-if="product.unit" class="pcard__unit">р&nbsp;/&nbsp;{{ product.unit.shortName }}</span>
+        </div>
+        <button
+          class="pcard__estimate-btn"
+          :disabled="stockType === 'red'"
+          @click.stop="addToEstimate"
+        >
+          + В смету
+        </button>
       </div>
     </div>
 
@@ -52,17 +61,29 @@
 </template>
 
 <script setup lang="ts">
+import { Notify } from 'quasar';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import type { Product } from 'src/types/api';
 import { useApi } from 'src/api/useApi';
 import { formatPriceRub } from 'src/utils/format';
+import { useEstimateStore } from 'src/stores/estimate';
 import { useFavoritesStore } from 'src/stores/favorites';
 
 const props = defineProps<{ product: Product }>();
 const router = useRouter();
 const api = useApi();
 const fav = useFavoritesStore();
+const estimate = useEstimateStore();
+
+function addToEstimate() {
+  if (props.product.inventory?.status === 'OUT_OF_STOCK') {
+    Notify.create({ type: 'warning', message: 'Нет в наличии' });
+    return;
+  }
+  estimate.addProduct(props.product, 1);
+  Notify.create({ type: 'positive', message: 'Добавлено в смету' });
+}
 
 const isFav = computed(() => fav.has(props.product.id));
 
@@ -274,12 +295,20 @@ const stockQty = computed(() => {
   font-weight: 500;
 }
 
-/* Price */
+/* Price + estimate row */
+.pcard__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+}
+
 .pcard__price-row {
   display: flex;
   align-items: baseline;
   gap: 6px;
-  margin-top: 4px;
+  flex-shrink: 0;
 }
 
 .pcard__price {
@@ -293,5 +322,40 @@ const stockQty = computed(() => {
   font-size: 12.5px;
   color: #8c94b3;
   font-weight: 500;
+}
+
+.pcard__estimate-btn {
+  padding: 7px 12px;
+  background: #2557e6;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(4px);
+  transition: opacity 0.15s, transform 0.15s, background 0.15s;
+
+  &:hover { background: #1a45c9; }
+
+  &:disabled {
+    background: #e8edf8;
+    color: #8c94b3;
+    cursor: not-allowed;
+  }
+}
+
+.pcard:hover .pcard__estimate-btn {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (max-width: 767px) {
+  .pcard__estimate-btn {
+    opacity: 1;
+    transform: none;
+  }
 }
 </style>
