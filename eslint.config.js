@@ -6,76 +6,73 @@ import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescri
 import prettierSkipFormatting from '@vue/eslint-config-prettier/skip-formatting';
 
 export default defineConfigWithVueTs(
-  {
-    /**
-     * Ignore the following files.
-     * Please note that pluginQuasar.configs.recommended() already ignores
-     * the "node_modules" folder for you (and all other Quasar project
-     * relevant folders and files).
-     *
-     * ESLint requires "ignores" key to be the only one in this object
-     */
-    // ignores: []
-  },
-
   pluginQuasar.configs.recommended(),
   js.configs.recommended,
 
-  /**
-   * https://eslint.vuejs.org
-   *
-   * pluginVue.configs.base
-   *   -> Settings and rules to enable correct ESLint parsing.
-   * pluginVue.configs[ 'flat/essential']
-   *   -> base, plus rules to prevent errors or unintended behavior.
-   * pluginVue.configs["flat/strongly-recommended"]
-   *   -> Above, plus rules to considerably improve code readability and/or dev experience.
-   * pluginVue.configs["flat/recommended"]
-   *   -> Above, plus rules to enforce subjective community defaults to ensure consistency.
-   */
-  pluginVue.configs['flat/essential'],
+  pluginVue.configs['flat/strongly-recommended'],
 
   {
     files: ['**/*.ts', '**/*.vue'],
     rules: {
+      // TypeScript
       '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-non-null-assertion': 'warn',
+
+      // Vue
+      'vue/component-name-in-template-casing': ['error', 'PascalCase'],
+      'vue/define-macros-order': ['error', { order: ['defineProps', 'defineEmits'] }],
+      'vue/no-unused-vars': 'warn',
+      'vue/padding-line-between-blocks': ['error', 'always'],
+      'vue/prefer-separate-static-class': 'error',
+      'vue/no-template-shadow': 'error',
+      'vue/no-v-html': 'warn',
+      'vue/html-self-closing': ['error', {
+        html: { void: 'always', normal: 'never', component: 'always' },
+        svg: 'always',
+        math: 'always',
+      }],
     },
   },
-  // https://github.com/vuejs/eslint-config-typescript
+
   vueTsConfigs.recommendedTypeChecked,
 
   {
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-
       globals: {
         ...globals.browser,
-        ...globals.node, // SSR, Electron, config files
-        process: 'readonly', // process.env.*
-        ga: 'readonly', // Google Analytics
+        ...globals.node,
+        process: 'readonly',
+        ga: 'readonly',
         cordova: 'readonly',
         Capacitor: 'readonly',
-        chrome: 'readonly', // BEX related
-        browser: 'readonly', // BEX related
+        chrome: 'readonly',
+        browser: 'readonly',
       },
     },
 
-    // add your custom rules here
     rules: {
+      // JS общие
       'prefer-promise-reject-errors': 'off',
-
-      // allow debugger during development only
       'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'eqeqeq': ['error', 'always'],
+      'no-var': 'error',
+      'prefer-const': 'error',
+      'prefer-template': 'error',
+      'object-shorthand': 'error',
+      'no-duplicate-imports': 'error',
+      'no-unused-expressions': 'error',
     },
   },
 
   {
     files: ['src-pwa/custom-service-worker.ts'],
     languageOptions: {
-      globals: {
-        ...globals.serviceworker,
-      },
+      globals: { ...globals.serviceworker },
     },
   },
 
