@@ -240,7 +240,7 @@ function buildRouteQuery(): Record<string, string> {
   if (ui.unitId !== null) q.unitId = String(ui.unitId);
   if (ui.minPrice !== null) q.minPrice = String(ui.minPrice);
   if (ui.maxPrice !== null) q.maxPrice = String(ui.maxPrice);
-  if (ui.inStock) q.inStock = 'true';
+  if (ui.inStock) q.status = 'IN_STOCK';
   if (ui.isHit) q.isHit = 'true';
   if (ui.sort) q.sort = String(ui.sort);
   if (ui.page && ui.page !== 1) q.page = String(ui.page);
@@ -261,7 +261,7 @@ function buildApiQuery(): ProductListQuery {
   if (ui.unitId !== null) query.unitId = ui.unitId;
   if (ui.minPrice !== null) query.minPrice = ui.minPrice;
   if (ui.maxPrice !== null) query.maxPrice = ui.maxPrice;
-  if (ui.inStock) query.inStock = true;
+  if (ui.inStock) query.status = 'IN_STOCK';
   if (ui.isHit) query.isHit = true;
 
   return query;
@@ -282,7 +282,7 @@ function applyRoute() {
     ui.unitId = readNumber(route.query.unitId);
     ui.minPrice = readNumber(route.query.minPrice);
     ui.maxPrice = readNumber(route.query.maxPrice);
-    ui.inStock = readBool(route.query.inStock);
+    ui.inStock = route.query.status === 'IN_STOCK';
     ui.isHit = readBool(route.query.isHit);
     ui.sort = readSort(route.query.sort);
     ui.page = readNumber(route.query.page) ?? 1;

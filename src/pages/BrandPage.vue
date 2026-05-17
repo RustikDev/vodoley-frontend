@@ -101,9 +101,9 @@
           <!-- Stock toggle -->
           <button
             class="filter-btn"
-            :class="{ on: filters.inStock }"
+            :class="{ on: filters.status }"
             type="button"
-            @click="filters.inStock = filters.inStock === true ? undefined : true"
+            @click="filters.status = filters.status === 'IN_STOCK' ? undefined : 'IN_STOCK'"
           >
             В наличии
           </button>
@@ -245,23 +245,23 @@ const viewMode = ref<'grid' | 'list'>('grid');
 type Filters = {
   q: string;
   categoryId: number | undefined;
-  inStock: true | undefined;
+  status: 'IN_STOCK' | undefined;
   sort: ProductSort | '';
 };
-const filters = ref<Filters>({ q: '', categoryId: undefined, inStock: undefined, sort: '' });
+const filters = ref<Filters>({ q: '', categoryId: undefined, status: undefined, sort: '' });
 
 async function loadProducts() {
   productsError.value = null;
   productsLoading.value = true;
   try {
-    const { q, categoryId, inStock, sort } = filters.value;
+    const { q, categoryId, status, sort } = filters.value;
     const query: Parameters<typeof api.brandProducts>[1] = {
       page: page.value,
       pageSize: PAGE_SIZE,
     };
     if (q) query.q = q;
     if (categoryId !== null && categoryId !== undefined) query.categoryId = categoryId;
-    if (inStock) query.inStock = inStock;
+    if (status) query.status = status;
     if (sort) query.sort = sort;
     const res = await api.brandProducts(slug.value, query);
     products.value = res.items;
@@ -274,7 +274,7 @@ async function loadProducts() {
 }
 
 function resetFilters() {
-  filters.value = { q: '', categoryId: undefined, inStock: undefined, sort: '' };
+  filters.value = { q: '', categoryId: undefined, status: undefined, sort: '' };
   page.value = 1;
 }
 
@@ -341,7 +341,7 @@ watch(
 );
 
 watch(
-  () => [filters.value.categoryId, filters.value.inStock, filters.value.sort],
+  () => [filters.value.categoryId, filters.value.status, filters.value.sort],
   () => { page.value = 1; void loadProducts(); },
 );
 
@@ -349,7 +349,7 @@ watch(page, () => { void loadProducts(); });
 
 watch(slug, () => {
   page.value = 1;
-  filters.value = { q: '', categoryId: undefined, inStock: undefined, sort: '' };
+  filters.value = { q: '', categoryId: undefined, status: undefined, sort: '' };
   void Promise.all([loadBrand(), loadCategories(), loadProducts()]);
 });
 

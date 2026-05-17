@@ -66,8 +66,8 @@ const activeTab = ref<string>('all');
 
 const tabs = [
   { key: 'all',      label: 'Все',        extra: {} },
-  { key: 'instock',  label: 'В наличии',  extra: { inStock: true } },
-  { key: 'order',    label: 'Под заказ',  extra: { inStock: false } },
+  { key: 'instock',  label: 'В наличии',  extra: { status: 'IN_STOCK' } },
+  { key: 'order',    label: 'Под заказ',  extra: { status: 'ON_ORDER' } },
 ];
 
 async function load(extra: Record<string, unknown> = {}) {
