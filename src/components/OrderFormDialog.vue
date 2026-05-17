@@ -131,7 +131,7 @@
         <q-btn flat label="Отмена" :disable="loading" @click="onClose(false)" />
         <q-btn
           color="primary"
-          icon="send"
+          icon-right="send"
           label="Отправить заказ"
           :loading="loading"
           @click="submit"

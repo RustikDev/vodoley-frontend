@@ -46,9 +46,6 @@
                   <router-link to="/catalog" class="hero-btn-primary">
                     Перейти в каталог &nbsp;→
                   </router-link>
-                  <router-link to="/catalog?sale=true" class="hero-btn-ghost">
-                    Подробнее об акции
-                  </router-link>
                 </div>
               </div>
               <div class="hero-slide__deco">
