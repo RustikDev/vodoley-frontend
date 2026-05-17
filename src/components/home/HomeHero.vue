@@ -92,7 +92,7 @@
         </div>
 
         <div class="hero-side">
-          <div class="side-card side-card--yellow" @click="router.push('/catalog')">
+          <div class="side-card side-card--yellow" @click="router.push('/delivery')">
             <div class="side-card__tag">
               <q-icon name="bolt" size="13px" />
               Быстро
@@ -403,7 +403,7 @@ onMounted(async () => {
 /* Decorative element */
 .hero-slide__deco {
   position: absolute;
-  right: -20px;
+  right: -2px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
@@ -549,6 +549,7 @@ onMounted(async () => {
   font-weight: 700;
   margin-top: 16px;
   transition: opacity 0.12s;
+  cursor: pointer;
 
   .side-card--yellow & {
     color: #1a45c9;

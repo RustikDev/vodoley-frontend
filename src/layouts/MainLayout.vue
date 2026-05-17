@@ -102,7 +102,10 @@
               </router-link>
 
               <router-link to="/favorites" class="hdr-action-btn">
-                <q-icon name="favorite_border" size="22px" />
+                <div class="hdr-action-btn__icon-wrap">
+                  <q-icon name="favorite_border" size="22px" />
+                  <span v-if="favorites.count" class="fav-badge">{{ favorites.count }}</span>
+                </div>
                 <span>Избранное</span>
               </router-link>
 
@@ -242,12 +245,14 @@ import { onMounted, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useEstimateStore } from 'src/stores/estimate';
 import { useAuthStore } from 'src/stores/auth';
+import { useFavoritesStore } from 'src/stores/favorites';
 import { useApi } from 'src/api/useApi';
 import type { CategoryNode } from 'src/types/api';
 
 const route = useRoute();
 const router = useRouter();
 const estimate = useEstimateStore();
+const favorites = useFavoritesStore();
 const auth = useAuthStore();
 const api = useApi();
 
@@ -639,6 +644,29 @@ const workStatusText = computed(() => {
   margin-left: 4px;
 
   &:hover { background: #1a45c9; }
+}
+
+.hdr-action-btn__icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fav-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: #dc2626;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  border-radius: 10px;
+  padding: 1px 5px;
+  min-width: 16px;
+  text-align: center;
+  line-height: 14px;
+  pointer-events: none;
 }
 
 .smeta-badge {
