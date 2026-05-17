@@ -63,7 +63,22 @@
           <input ref="fileInput" type="file" accept=".xlsx" class="hidden" @change="onFile" />
         </div>
       </q-card-section>
+
+      <q-separator />
+
+      <q-card-section class="row justify-end">
+        <q-btn
+          color="primary"
+          icon-right="send"
+          label="Сформировать заказ"
+          unelevated
+          no-caps
+          @click="orderDialog = true"
+        />
+      </q-card-section>
     </q-card>
+
+    <OrderFormDialog v-model="orderDialog" />
   </q-page>
 </template>
 
@@ -73,9 +88,11 @@ import { Notify } from 'quasar';
 import * as XLSX from 'xlsx';
 import { useEstimateStore, type EstimateItem } from 'src/stores/estimate';
 import { formatPriceRub } from 'src/utils/format';
+import OrderFormDialog from 'src/components/OrderFormDialog.vue';
 
 const store = useEstimateStore();
 const fileInput = ref<HTMLInputElement | null>(null);
+const orderDialog = ref(false);
 
 function downloadBlob(filename: string, blob: Blob) {
   const url = URL.createObjectURL(blob);

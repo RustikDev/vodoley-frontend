@@ -158,6 +158,23 @@ export type EstimatePreviewResponse = {
   total: number;
 };
 
+export type OrderRequest = {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  delivery: boolean;
+  address: string;
+  items: Array<{
+    productId: number;
+    name: string;
+    unit: string;
+    quantity: number;
+    price: number;
+    total: number;
+  }>;
+  totalAmount: number;
+};
+
 export type AdminLoginRequest = { email: string; password: string };
 export type AdminLoginResponse = { access_token: string };
 

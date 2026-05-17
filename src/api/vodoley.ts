@@ -3,6 +3,7 @@ import type {
   AdminLoginRequest,
   AdminLoginResponse,
   Brand,
+  OrderRequest,
   BrandCategory,
   Category,
   CategoryNode,
@@ -87,6 +88,11 @@ export function createVodoleyApi(axios: AxiosInstance) {
 
     async estimatePreview(payload: EstimatePreviewRequest) {
       const { data } = await axios.post<EstimatePreviewResponse>('/estimate/preview', payload);
+      return data;
+    },
+
+    async submitOrder(payload: OrderRequest) {
+      const { data } = await axios.post<{ id: number }>('/orders', payload);
       return data;
     },
 
