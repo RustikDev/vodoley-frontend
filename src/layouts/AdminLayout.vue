@@ -68,6 +68,17 @@
             <span class="sidebar-item__label">Ед. изм.</span>
           </button>
         </router-link>
+
+        <div class="sidebar-nav__label sidebar-nav__label--mt">Продажи</div>
+
+        <router-link to="/admin/orders" custom v-slot="{ isActive, navigate }">
+          <button class="sidebar-item" :class="{ 'sidebar-item--active': isActive }" @click="navigate">
+            <span class="sidebar-item__icon">
+              <q-icon name="receipt_long" size="18px" />
+            </span>
+            <span class="sidebar-item__label">Заказы</span>
+          </button>
+        </router-link>
       </nav>
 
       <!-- Footer -->
@@ -124,6 +135,7 @@ const pageTitles: Record<string, string> = {
   '/admin/brands': 'Бренды',
   '/admin/products': 'Товары',
   '/admin/units': 'Единицы измерения',
+  '/admin/orders': 'Заказы',
 };
 
 const pageTitle = computed(() => pageTitles[route.path] ?? 'Панель управления');

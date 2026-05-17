@@ -178,6 +178,51 @@ export type OrderRequest = {
 export type AdminLoginRequest = { email: string; password: string };
 export type AdminLoginResponse = { access_token: string };
 
+export type AdminOrderItem = {
+  productId: number;
+  name: string;
+  unit: string;
+  quantity: number;
+  price: number;
+  total: number;
+};
+
+export type AdminOrder = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  delivery: boolean;
+  address: string;
+  totalAmount: number;
+  items?: AdminOrderItem[];
+  createdAt: string;
+  updatedAt?: string;
+};
+
+export type AdminOrdersMeta = {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+};
+
+export type AdminOrdersResponse = {
+  data: AdminOrder[];
+  meta: AdminOrdersMeta;
+};
+
+export type AdminOrdersQuery = {
+  page?: number;
+  limit?: number;
+  search?: string;
+  delivery?: boolean;
+  sortBy?: 'createdAt' | 'totalAmount' | 'lastName';
+  sortOrder?: 'asc' | 'desc';
+};
+
+export type UpdateOrderRequest = Partial<Pick<AdminOrder, 'firstName' | 'lastName' | 'phone' | 'delivery' | 'address' | 'totalAmount'>>;
+
 export type CreateCategoryRequest = {
   name: string;
   slug: string;

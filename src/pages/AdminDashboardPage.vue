@@ -11,7 +11,7 @@
     </div>
 
     <div v-if="loading" class="row q-col-gutter-md q-mb-lg">
-      <div v-for="i in 5" :key="i" class="col-12 col-sm-6 col-md">
+      <div v-for="i in 6" :key="i" class="col-12 col-sm-6 col-md">
         <q-skeleton height="100px" class="rounded-borders" />
       </div>
     </div>
@@ -67,6 +67,16 @@
             <div class="stat-card__val">{{ stats.totalCategories }}</div>
             <div class="stat-card__label">Категории</div>
             <div class="stat-card__sub">{{ stats.activeCategories }} активных</div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 col-md">
+          <div class="stat-card stat-card--clickable" @click="router.push('/admin/orders')">
+            <div class="stat-card__icon" style="background:#fff0e6">
+              <q-icon name="receipt_long" color="deep-orange" size="24px" />
+            </div>
+            <div class="stat-card__val">{{ ordersTotal }}</div>
+            <div class="stat-card__label">Заказы</div>
+            <div class="stat-card__sub">Всего заказов</div>
           </div>
         </div>
       </div>
@@ -127,7 +137,7 @@
       </div>
 
       <!-- Top categories & brands -->
-      <div class="row q-col-gutter-md">
+      <div class="row q-col-gutter-md q-mb-lg">
         <div class="col-12 col-md-6">
           <div class="chart-card">
             <div class="chart-card__title">Топ категорий по товарам</div>
@@ -145,6 +155,124 @@
           </div>
         </div>
       </div>
+
+      <!-- Recent orders -->
+      <div class="chart-card">
+        <div class="chart-card__title row items-center justify-between">
+          <span>Последние заказы</span>
+          <q-btn flat dense size="sm" label="Все заказы" color="primary" icon-right="arrow_forward" @click="router.push('/admin/orders')" />
+        </div>
+        <q-table
+          flat
+          :rows="recentOrders"
+          :columns="recentOrdersColumns"
+          row-key="id"
+          hide-pagination
+          :rows-per-page-options="[0]"
+          :loading="loading"
+          class="orders-table-clickable"
+          @row-click="(_e, row) => openOrderDetail(row)"
+        >
+          <template #body-cell-name="p">
+            <q-td :props="p">{{ p.row.lastName }} {{ p.row.firstName }}</q-td>
+          </template>
+          <template #body-cell-phone="p">
+            <q-td :props="p">{{ formatPhone(p.row.phone) }}</q-td>
+          </template>
+          <template #body-cell-delivery="p">
+            <q-td :props="p">
+              <q-badge :color="p.row.delivery ? 'primary' : 'grey-5'" :label="p.row.delivery ? 'Доставка' : 'Самовывоз'" />
+            </q-td>
+          </template>
+          <template #body-cell-totalAmount="p">
+            <q-td :props="p" class="text-right text-weight-bold">
+              {{ formatRub(p.row.totalAmount) }}
+            </q-td>
+          </template>
+          <template #body-cell-createdAt="p">
+            <q-td :props="p" class="text-grey-6" style="font-size:12px">
+              {{ formatShortDate(p.row.createdAt) }}
+            </q-td>
+          </template>
+          <template #no-data>
+            <div class="q-pa-md text-grey-5">Заказов пока нет</div>
+          </template>
+        </q-table>
+      </div>
+
+      <!-- Order detail dialog -->
+      <q-dialog v-model="orderDetailOpen" maximized>
+        <q-card style="max-width:860px;width:100%;margin:auto;max-height:90vh;display:flex;flex-direction:column">
+          <q-card-section class="row items-center" style="padding:20px 24px">
+            <div>
+              <div style="font-size:20px;font-weight:800;color:#0e1430">Заказ #{{ orderDetail?.id }}</div>
+              <div style="font-size:13px;color:#6b7596;margin-top:2px">{{ formatShortDate(orderDetail?.createdAt ?? '') }}</div>
+            </div>
+            <q-space />
+            <q-btn flat round icon="open_in_new" color="primary" @click="router.push('/admin/orders')">
+              <q-tooltip>Открыть в разделе заказов</q-tooltip>
+            </q-btn>
+            <q-btn flat round icon="close" @click="orderDetailOpen = false" />
+          </q-card-section>
+
+          <q-separator />
+
+          <q-card-section v-if="orderDetailLoading" class="q-pa-xl text-center">
+            <q-spinner size="40px" color="primary" />
+          </q-card-section>
+
+          <q-card-section v-else-if="orderDetail" style="flex:1;overflow-y:auto;padding:24px">
+            <div class="row q-col-gutter-md q-mb-lg">
+              <div class="col-12 col-sm-6">
+                <div class="dash-info-block">
+                  <div class="dash-info-block__title"><q-icon name="person" size="15px" /> Покупатель</div>
+                  <div class="dash-info-row"><span class="dash-info-lbl">Имя</span><span>{{ orderDetail.firstName }} {{ orderDetail.lastName }}</span></div>
+                  <div class="dash-info-row"><span class="dash-info-lbl">Телефон</span><span>{{ formatPhone(orderDetail.phone) }}</span></div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="dash-info-block">
+                  <div class="dash-info-block__title"><q-icon name="local_shipping" size="15px" /> Доставка</div>
+                  <div class="dash-info-row">
+                    <span class="dash-info-lbl">Тип</span>
+                    <q-badge :color="orderDetail.delivery ? 'primary' : 'grey-6'" :label="orderDetail.delivery ? 'Доставка' : 'Самовывоз'" />
+                  </div>
+                  <div v-if="orderDetail.delivery && orderDetail.address" class="dash-info-row">
+                    <span class="dash-info-lbl">Адрес</span><span>{{ orderDetail.address }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dash-info-block">
+              <div class="dash-info-block__title"><q-icon name="shopping_cart" size="15px" /> Позиции</div>
+              <q-table
+                flat
+                :rows="orderDetail.items ?? []"
+                :columns="orderItemColumns"
+                row-key="productId"
+                hide-pagination
+                :rows-per-page-options="[0]"
+              >
+                <template #body-cell-price="p">
+                  <q-td :props="p" class="text-right">{{ formatRub(p.row.price) }}</q-td>
+                </template>
+                <template #body-cell-total="p">
+                  <q-td :props="p" class="text-right text-weight-bold">{{ formatRub(p.row.total) }}</q-td>
+                </template>
+              </q-table>
+              <div style="display:flex;justify-content:flex-end;align-items:center;gap:16px;margin-top:12px;padding:12px 16px;background:#eff5ff;border-radius:8px">
+                <span style="font-size:15px;font-weight:600;color:#344066">Итого:</span>
+                <span style="font-size:20px;font-weight:900;color:#2557e6">{{ formatRub(orderDetail.totalAmount) }}</span>
+              </div>
+            </div>
+          </q-card-section>
+
+          <q-card-actions align="right" class="q-pa-md">
+            <q-btn flat label="Закрыть" @click="orderDetailOpen = false" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </template>
 
   </q-page>
@@ -163,25 +291,35 @@ import {
   Tooltip,
 } from 'chart.js';
 import { useApi } from 'src/api/useApi';
-import type { Brand, Category, Product } from 'src/types/api';
+import { useRouter } from 'vue-router';
+import type { AdminOrder, Brand, Category, Product } from 'src/types/api';
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const api = useApi();
+const router = useRouter();
 const loading = ref(false);
 
 const products = ref<Product[]>([]);
 const brands = ref<Brand[]>([]);
 const categories = ref<Category[]>([]);
+const ordersTotal = ref(0);
+const recentOrders = ref<AdminOrder[]>([]);
 
 async function load() {
   loading.value = true;
   try {
-    [products.value, brands.value, categories.value] = await Promise.all([
+    const [p, b, c, ordersRes] = await Promise.all([
       api.adminProductsList(),
       api.adminBrandsList(),
       api.adminCategoriesList(),
+      api.adminOrdersList({ page: 1, limit: 5, sortBy: 'createdAt', sortOrder: 'desc' }),
     ]);
+    products.value = p;
+    brands.value = b;
+    categories.value = c;
+    ordersTotal.value = ordersRes.meta.total;
+    recentOrders.value = ordersRes.data;
   } finally {
     loading.value = false;
   }
@@ -309,6 +447,56 @@ const topCategoriesChart = computed(() => {
   };
 });
 
+/* ── Recent orders columns ── */
+const recentOrdersColumns = [
+  { name: 'id',          label: '#',       field: 'id',          align: 'left'  as const, sortable: false },
+  { name: 'name',        label: 'Клиент',  field: 'lastName',    align: 'left'  as const, sortable: false },
+  { name: 'phone',       label: 'Телефон', field: 'phone',       align: 'left'  as const, sortable: false },
+  { name: 'delivery',    label: 'Тип',     field: 'delivery',    align: 'center'as const, sortable: false },
+  { name: 'totalAmount', label: 'Сумма',   field: 'totalAmount', align: 'right' as const, sortable: false },
+  { name: 'createdAt',   label: 'Дата',    field: 'createdAt',   align: 'left'  as const, sortable: false },
+];
+
+const orderItemColumns = [
+  { name: 'name',     label: 'Товар',  field: 'name',     align: 'left'  as const },
+  { name: 'unit',     label: 'Ед.',    field: 'unit',     align: 'center'as const },
+  { name: 'quantity', label: 'Кол-во', field: 'quantity', align: 'right' as const },
+  { name: 'price',    label: 'Цена',   field: 'price',    align: 'right' as const },
+  { name: 'total',    label: 'Итого',  field: 'total',    align: 'right' as const },
+];
+
+/* ── Order detail dialog (dashboard) ── */
+const orderDetailOpen = ref(false);
+const orderDetail = ref<AdminOrder | null>(null);
+const orderDetailLoading = ref(false);
+
+async function openOrderDetail(row: AdminOrder) {
+  orderDetailOpen.value = true;
+  orderDetailLoading.value = true;
+  orderDetail.value = row;
+  try {
+    orderDetail.value = await api.adminOrderById(row.id);
+  } finally {
+    orderDetailLoading.value = false;
+  }
+}
+
+function formatRub(val: number) {
+  return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(val);
+}
+
+function formatShortDate(iso: string) {
+  if (!iso) return '—';
+  return new Intl.DateTimeFormat('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
+}
+
+function formatPhone(phone: string): string {
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length === 11 && digits.startsWith('7')) return `8${digits.slice(1)}`;
+  if (digits.length === 10) return `8${digits}`;
+  return phone;
+}
+
 /* ── Top brands ── */
 const topBrandsChart = computed(() => {
   const brandMap = new Map<number, string>();
@@ -362,6 +550,22 @@ const topBrandsChart = computed(() => {
 }
 .stat-card__label { font-size: 13px; font-weight: 600; color: #344066; }
 .stat-card__sub { font-size: 12px; color: #6b7596; margin-top: 4px; }
+.stat-card--clickable { cursor: pointer; transition: box-shadow 0.15s, border-color 0.15s; }
+.stat-card--clickable:hover { border-color: #2557e6; box-shadow: 0 4px 16px rgba(37,87,230,0.12); }
+
+.orders-table-clickable :deep(tbody tr) { cursor: pointer; transition: background 0.12s; }
+.orders-table-clickable :deep(tbody tr:hover td) { background: #f0f5ff; }
+
+.dash-info-block {
+  background: #f8faff; border: 1px solid #e8edf8; border-radius: 12px; padding: 16px; height: 100%;
+}
+.dash-info-block__title {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 700; color: #344066;
+  text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;
+}
+.dash-info-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; font-size: 14px; color: #0e1430; }
+.dash-info-lbl { color: #6b7596; min-width: 72px; flex-shrink: 0; font-size: 13px; }
 
 /* Chart cards */
 .chart-card {

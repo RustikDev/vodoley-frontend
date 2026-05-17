@@ -2,6 +2,9 @@
 import type {
   AdminLoginRequest,
   AdminLoginResponse,
+  AdminOrder,
+  AdminOrdersQuery,
+  AdminOrdersResponse,
   Brand,
   OrderRequest,
   BrandCategory,
@@ -23,6 +26,7 @@ import type {
   UpdateBrandRequest,
   UpdateCategoryRequest,
   UpdateInventoryRequest,
+  UpdateOrderRequest,
   UpdateProductRequest,
   UpdateUnitRequest,
 } from 'src/types/api';
@@ -258,6 +262,26 @@ export function createVodoleyApi(axios: AxiosInstance) {
     async adminDeleteCategory(id: number) {
       const { data } = await axios.delete<Category>(`/admin/categories/${id}`);
       return data;
+    },
+
+    // Admin / Orders
+    async adminOrdersList(query: AdminOrdersQuery = {}) {
+      const { data } = await axios.get<AdminOrdersResponse>('/admin/orders', { params: query });
+      return data;
+    },
+
+    async adminOrderById(id: number) {
+      const { data } = await axios.get<AdminOrder>(`/admin/orders/${id}`);
+      return data;
+    },
+
+    async adminUpdateOrder(id: number, payload: UpdateOrderRequest) {
+      const { data } = await axios.patch<AdminOrder>(`/admin/orders/${id}`, payload);
+      return data;
+    },
+
+    async adminDeleteOrder(id: number) {
+      await axios.delete(`/admin/orders/${id}`);
     },
 
     // Admin / Units
