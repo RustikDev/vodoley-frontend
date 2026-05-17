@@ -7,7 +7,7 @@
         <div class="dash-title">Дашборд</div>
         <div class="dash-sub">Сводная статистика магазина</div>
       </div>
-      <q-btn outline icon="refresh" label="Обновить" :loading="loading" @click="load" />
+      <VdsBtn variant="secondary" icon="refresh" label="Обновить" :loading="loading" @click="load" />
     </div>
 
     <div v-if="loading" class="row q-col-gutter-md q-mb-lg">
@@ -160,7 +160,7 @@
       <div class="chart-card">
         <div class="chart-card__title row items-center justify-between">
           <span>Последние заказы</span>
-          <q-btn flat dense size="sm" label="Все заказы" color="primary" icon-right="arrow_forward" @click="router.push('/admin/orders')" />
+          <VdsBtn variant="ghost" color="primary" size="sm" label="Все заказы" icon-right="arrow_forward" @click="router.push('/admin/orders')" />
         </div>
         <q-table
           flat
@@ -181,7 +181,10 @@
           </template>
           <template #body-cell-delivery="p">
             <q-td :props="p">
-              <q-badge :color="p.row.delivery ? 'primary' : 'grey-5'" :label="p.row.delivery ? 'Доставка' : 'Самовывоз'" />
+              <span class="delivery-chip" :class="p.row.delivery ? 'delivery-chip--yes' : 'delivery-chip--no'">
+                <q-icon :name="p.row.delivery ? 'local_shipping' : 'storefront'" size="13px" />
+                {{ p.row.delivery ? 'Доставка' : 'Самовывоз' }}
+              </span>
             </q-td>
           </template>
           <template #body-cell-totalAmount="p">
@@ -209,10 +212,10 @@
               <div style="font-size:13px;color:#6b7596;margin-top:2px">{{ formatShortDate(orderDetail?.createdAt ?? '') }}</div>
             </div>
             <q-space />
-            <q-btn flat round icon="open_in_new" color="primary" @click="router.push('/admin/orders')">
+            <VdsBtn variant="ghost" color="primary" icon="open_in_new" @click="router.push('/admin/orders')">
               <q-tooltip>Открыть в разделе заказов</q-tooltip>
-            </q-btn>
-            <q-btn flat round icon="close" @click="orderDetailOpen = false" />
+            </VdsBtn>
+            <VdsBtn variant="ghost" icon="close" @click="orderDetailOpen = false" />
           </q-card-section>
 
           <q-separator />
@@ -235,7 +238,10 @@
                   <div class="dash-info-block__title"><q-icon name="local_shipping" size="15px" /> Доставка</div>
                   <div class="dash-info-row">
                     <span class="dash-info-lbl">Тип</span>
-                    <q-badge :color="orderDetail.delivery ? 'primary' : 'grey-6'" :label="orderDetail.delivery ? 'Доставка' : 'Самовывоз'" />
+                    <span class="delivery-chip" :class="orderDetail.delivery ? 'delivery-chip--yes' : 'delivery-chip--no'">
+                      <q-icon :name="orderDetail.delivery ? 'local_shipping' : 'storefront'" size="13px" />
+                      {{ orderDetail.delivery ? 'Доставка' : 'Самовывоз' }}
+                    </span>
                   </div>
                   <div v-if="orderDetail.delivery && orderDetail.address" class="dash-info-row">
                     <span class="dash-info-lbl">Адрес</span><span>{{ orderDetail.address }}</span>
@@ -269,7 +275,7 @@
           </q-card-section>
 
           <q-card-actions align="right" class="q-pa-md">
-            <q-btn flat label="Закрыть" @click="orderDetailOpen = false" />
+            <VdsBtn variant="ghost" label="Закрыть" @click="orderDetailOpen = false" />
           </q-card-actions>
         </q-card>
       </q-dialog>
@@ -292,6 +298,7 @@ import {
 } from 'chart.js';
 import { useApi } from 'src/api/useApi';
 import { useRouter } from 'vue-router';
+import VdsBtn from 'src/components/VdsBtn.vue';
 import type { AdminOrder, Brand, Category, Product } from 'src/types/api';
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
@@ -588,4 +595,18 @@ const topBrandsChart = computed(() => {
 .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .legend-label { flex: 1; color: #344066; }
 .legend-val { font-weight: 700; color: #0e1430; }
+
+.delivery-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1.5px solid;
+  white-space: nowrap;
+}
+.delivery-chip--yes { color: #2557e6; background: #eff4ff; border-color: #c5d5fb; }
+.delivery-chip--no  { color: #5a6284; background: #f4f5f8; border-color: #d8dfef; }
 </style>

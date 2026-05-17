@@ -5,8 +5,8 @@
     <div class="row wrap items-center justify-between q-mb-md" style="gap:8px">
       <div class="text-h6">Бренды</div>
       <div class="row q-gutter-sm">
-        <q-btn outline icon="refresh" label="Обновить" :loading="loading" @click="reload" />
-        <q-btn color="primary" icon="add" label="Создать бренд" @click="openCreate" />
+        <VdsBtn variant="secondary" icon="refresh" label="Обновить" :loading="loading" @click="reload" />
+        <VdsBtn variant="primary" icon="add" label="Создать бренд" @click="openCreate" />
       </div>
     </div>
 
@@ -102,8 +102,8 @@
               <q-list dense padding>
                 <q-item>
                   <q-item-section>
-                    <q-btn
-                      outline
+                    <VdsBtn
+                      variant="secondary"
                       size="sm"
                       icon="upload"
                       label="Загрузить логотип"
@@ -114,11 +114,10 @@
                 </q-item>
                 <q-item v-if="p.row.logo">
                   <q-item-section>
-                    <q-btn
-                      outline
+                    <VdsBtn
+                      variant="danger-ghost"
                       size="sm"
                       icon="delete"
-                      color="negative"
                       label="Удалить логотип"
                       :loading="deletingLogoId === p.row.id"
                       @click="deleteLogo(p.row)"
@@ -130,14 +129,14 @@
           </q-btn>
 
           <!-- Edit -->
-          <q-btn flat dense round icon="edit" color="grey-7" title="Редактировать" @click="openEdit(p.row)">
+          <VdsBtn variant="ghost" icon="edit" size="sm" @click="openEdit(p.row)">
             <q-tooltip>Редактировать</q-tooltip>
-          </q-btn>
+          </VdsBtn>
 
           <!-- Delete -->
-          <q-btn flat dense round icon="delete" color="negative" title="Удалить" @click="confirmDelete(p.row)">
+          <VdsBtn variant="danger-ghost" icon="delete" size="sm" @click="confirmDelete(p.row)">
             <q-tooltip>Удалить</q-tooltip>
-          </q-btn>
+          </VdsBtn>
         </q-td>
       </template>
 
@@ -161,7 +160,7 @@
         <q-card-section class="row items-center q-pb-none">
           <div class="text-h6">{{ form.id ? 'Редактировать бренд' : 'Новый бренд' }}</div>
           <q-space />
-          <q-btn flat round dense icon="close" v-close-popup />
+          <VdsBtn variant="ghost" icon="close" v-close-popup />
         </q-card-section>
 
         <div style="overflow-y:auto; flex:1">
@@ -269,13 +268,8 @@
         </div>
 
         <q-card-actions align="right" class="q-px-md q-pb-md">
-          <q-btn flat label="Отмена" v-close-popup />
-          <q-btn
-            color="primary"
-            :label="form.id ? 'Сохранить' : 'Создать'"
-            :loading="saving"
-            @click="save"
-          />
+          <VdsBtn variant="ghost" label="Отмена" v-close-popup />
+          <VdsBtn variant="primary" :label="form.id ? 'Сохранить' : 'Создать'" :loading="saving" @click="save" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -284,6 +278,7 @@
 </template>
 
 <script setup lang="ts">
+import VdsBtn from 'src/components/VdsBtn.vue';
 import VdsEmptyState from 'src/components/VdsEmptyState.vue';
 import VdsErrorState from 'src/components/VdsErrorState.vue';
 import { computed, onMounted, reactive, ref } from 'vue';

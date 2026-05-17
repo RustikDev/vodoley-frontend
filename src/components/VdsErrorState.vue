@@ -9,13 +9,14 @@
         <div v-if="description" class="text-body2 vds-muted q-mt-xs">{{ description }}</div>
       </div>
       <div v-if="onRetry" class="col-auto">
-        <q-btn outline color="primary" icon="refresh" label="Повторить" @click="onRetry" />
+        <VdsBtn variant="secondary" icon="refresh" label="Повторить" @click="onRetry" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import VdsBtn from 'src/components/VdsBtn.vue';
 defineProps<{
   title: string;
   description?: string;

@@ -7,7 +7,7 @@
         <div class="orders-title">Заказы</div>
         <div class="orders-sub">Управление заказами покупателей</div>
       </div>
-      <q-btn outline icon="refresh" label="Обновить" :loading="loading" @click="reload" />
+      <VdsBtn variant="secondary" icon="refresh" label="Обновить" :loading="loading" @click="reload" />
     </div>
 
     <!-- Filters -->
@@ -126,18 +126,12 @@
         <!-- Действия -->
         <template #body-cell-actions="p">
           <q-td :props="p" class="actions-cell">
-            <q-btn
-              flat round dense size="sm" icon="visibility" color="primary"
-              @click="openDetail(p.row)"
-            >
+            <VdsBtn variant="ghost" color="primary" icon="visibility" size="sm" @click="openDetail(p.row)">
               <q-tooltip>Просмотр</q-tooltip>
-            </q-btn>
-            <q-btn
-              flat round dense size="sm" icon="delete" color="negative"
-              @click="confirmDelete(p.row)"
-            >
+            </VdsBtn>
+            <VdsBtn variant="danger-ghost" icon="delete" size="sm" @click="confirmDelete(p.row)">
               <q-tooltip>Удалить</q-tooltip>
-            </q-btn>
+            </VdsBtn>
           </q-td>
         </template>
 
@@ -158,7 +152,7 @@
             <div class="detail-sub">{{ formatDate(detailOrder?.createdAt ?? '') }}</div>
           </div>
           <q-space />
-          <q-btn flat round icon="close" @click="detailOpen = false" />
+          <VdsBtn variant="ghost" icon="close" @click="detailOpen = false" />
         </q-card-section>
 
         <q-separator />
@@ -241,11 +235,8 @@
         </q-card-section>
 
         <q-card-actions align="right" class="q-pa-md">
-          <q-btn
-            flat color="negative" icon="delete" label="Удалить заказ"
-            @click="confirmDeleteFromDetail"
-          />
-          <q-btn flat label="Закрыть" @click="detailOpen = false" />
+          <VdsBtn variant="danger-ghost" icon="delete" label="Удалить заказ" @click="confirmDeleteFromDetail" />
+          <VdsBtn variant="ghost" label="Закрыть" @click="detailOpen = false" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -263,8 +254,8 @@
           </div>
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn flat label="Отмена" @click="deleteOpen = false" />
-          <q-btn color="negative" label="Удалить" :loading="deleteLoading" @click="doDelete" />
+          <VdsBtn variant="ghost" label="Отмена" @click="deleteOpen = false" />
+          <VdsBtn variant="danger" label="Удалить" :loading="deleteLoading" @click="doDelete" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -275,6 +266,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useQuasar, type QTableProps } from 'quasar';
+import VdsBtn from 'src/components/VdsBtn.vue';
 import { useApi } from 'src/api/useApi';
 import type { AdminOrder } from 'src/types/api';
 

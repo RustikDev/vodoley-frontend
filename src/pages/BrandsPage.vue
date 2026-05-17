@@ -40,7 +40,7 @@
           <div class="error-ico">⚠</div>
           <div class="error-title">Не удалось загрузить бренды</div>
           <div class="error-sub">{{ error }}</div>
-          <button class="btn primary" type="button" @click="load">Попробовать снова</button>
+          <VdsBtn variant="primary" label="Попробовать снова" @click="load" />
         </div>
       </div>
 
@@ -49,7 +49,7 @@
         <div class="empty-card">
           <div class="empty-title">Ничего не найдено</div>
           <div class="empty-sub">По запросу «{{ searchQ }}» брендов не найдено.</div>
-          <button class="btn ghost" type="button" @click="searchQ = ''">Сбросить поиск</button>
+          <VdsBtn variant="secondary" label="Сбросить поиск" @click="searchQ = ''" />
         </div>
       </div>
 
@@ -134,6 +134,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useApi } from 'src/api/useApi';
+import VdsBtn from 'src/components/VdsBtn.vue';
 import type { Brand } from 'src/types/api';
 
 const api = useApi();

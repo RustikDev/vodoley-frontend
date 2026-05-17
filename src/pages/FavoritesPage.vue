@@ -19,13 +19,8 @@
         </div>
 
         <div class="head-actions">
-          <button v-if="fav.count" class="btn primary" type="button" @click="addAllToEstimate">
-            <span class="ico">+</span>
-            Всё в смету
-          </button>
-          <button v-if="fav.count" class="btn danger" type="button" @click="fav.clear">
-            Очистить
-          </button>
+          <VdsBtn v-if="fav.count" variant="primary" icon="add" label="Всё в смету" @click="addAllToEstimate" />
+          <VdsBtn v-if="fav.count" variant="danger-ghost" label="Очистить" @click="fav.clear" />
         </div>
       </div>
 
@@ -33,7 +28,7 @@
         <div class="empty-card">
           <div class="empty-title">В избранном пока пусто</div>
           <div class="empty-sub">Открой товар в каталоге и нажми на сердечко.</div>
-          <router-link class="btn primary" to="/catalog">Перейти в каталог</router-link>
+          <VdsBtn variant="primary" label="Перейти в каталог" to="/catalog" />
         </div>
       </div>
 
@@ -134,11 +129,9 @@
         <div class="actionbar" :class="{ on: selectedIds.size > 0 }">
           <span class="selcount">{{ selectedIds.size }} выбрано</span>
           <span class="actsep" />
-          <button class="a-btn" type="button" @click="clearSelection">Снять выбор</button>
-          <button class="a-btn" type="button" @click="removeSelected">Убрать</button>
-          <button class="a-btn primary" type="button" @click="addSelectedToEstimate">
-            + В смету
-          </button>
+          <VdsBtn variant="ghost" size="sm" label="Снять выбор" @click="clearSelection" />
+          <VdsBtn variant="ghost" size="sm" label="Убрать" @click="removeSelected" />
+          <VdsBtn variant="primary" size="sm" label="+ В смету" @click="addSelectedToEstimate" />
         </div>
       </template>
     </div>
@@ -152,6 +145,7 @@ import { useApi } from 'src/api/useApi';
 import type { Product } from 'src/types/api';
 import { useEstimateStore } from 'src/stores/estimate';
 import { useFavoritesStore } from 'src/stores/favorites';
+import VdsBtn from 'src/components/VdsBtn.vue';
 import ProductCard from 'src/components/ProductCard.vue';
 
 const api = useApi();

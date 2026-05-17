@@ -42,7 +42,7 @@
             </td>
             <td class="text-right" style="width: 160px">{{ formatPriceRub(it.price * it.quantity) }}</td>
             <td class="text-right" style="width: 56px">
-              <q-btn flat dense round icon="delete" color="negative" @click="store.remove(it.productId)" />
+              <VdsBtn variant="danger-ghost" icon="delete" size="sm" @click="store.remove(it.productId)" />
             </td>
           </tr>
         </tbody>
@@ -57,9 +57,9 @@
       <q-card-section class="row items-center justify-between">
         <div class="text-caption text-grey-7">Экспорт/импорт</div>
         <div class="row q-gutter-sm">
-          <q-btn flat color="negative" icon="delete_sweep" label="Очистить" @click="store.clear" />
-          <q-btn color="primary" icon="download" label="Экспорт XLSX" @click="exportXlsx" />
-          <q-btn outline color="primary" icon="upload" label="Импорт XLSX" @click="pickFile" />
+          <VdsBtn variant="danger-ghost" icon="delete_sweep" label="Очистить" @click="store.clear" />
+          <VdsBtn variant="primary" icon="download" label="Экспорт XLSX" @click="exportXlsx" />
+          <VdsBtn variant="secondary" icon="upload" label="Импорт XLSX" @click="pickFile" />
           <input ref="fileInput" type="file" accept=".xlsx" class="hidden" @change="onFile" />
         </div>
       </q-card-section>
@@ -67,14 +67,7 @@
       <q-separator />
 
       <q-card-section class="row justify-end">
-        <q-btn
-          color="primary"
-          icon-right="send"
-          label="Сформировать заказ"
-          unelevated
-          no-caps
-          @click="orderDialog = true"
-        />
+        <VdsBtn variant="primary" icon-right="send" label="Сформировать заказ" @click="orderDialog = true" />
       </q-card-section>
     </q-card>
 
@@ -88,6 +81,7 @@ import { Notify } from 'quasar';
 import * as XLSX from 'xlsx';
 import { useEstimateStore, type EstimateItem } from 'src/stores/estimate';
 import { formatPriceRub } from 'src/utils/format';
+import VdsBtn from 'src/components/VdsBtn.vue';
 import OrderFormDialog from 'src/components/OrderFormDialog.vue';
 
 const store = useEstimateStore();

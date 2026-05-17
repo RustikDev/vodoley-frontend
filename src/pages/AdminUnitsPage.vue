@@ -3,8 +3,8 @@
     <div class="row wrap items-center justify-between q-mb-md" style="gap:8px">
       <div class="text-h6">Единицы измерения</div>
       <div class="row q-gutter-sm">
-        <q-btn outline icon="refresh" label="Обновить" :loading="loading" @click="reload" />
-        <q-btn color="primary" icon="add" label="Создать" @click="openCreate" />
+        <VdsBtn variant="secondary" icon="refresh" label="Обновить" :loading="loading" @click="reload" />
+        <VdsBtn variant="primary" icon="add" label="Создать" @click="openCreate" />
       </div>
     </div>
 
@@ -42,8 +42,8 @@
 
       <template #body-cell-actions="p">
         <q-td :props="p" class="text-right">
-          <q-btn flat dense icon="edit" @click="openEdit(p.row)" />
-          <q-btn flat dense icon="delete" color="negative" @click="confirmDelete(p.row)" />
+          <VdsBtn variant="ghost" icon="edit" size="sm" @click="openEdit(p.row)" />
+          <VdsBtn variant="danger-ghost" icon="delete" size="sm" @click="confirmDelete(p.row)" />
         </q-td>
       </template>
       <template #no-data>
@@ -64,8 +64,8 @@
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Отмена" v-close-popup />
-          <q-btn color="primary" label="Сохранить" :loading="saving" @click="save" />
+          <VdsBtn variant="ghost" label="Отмена" v-close-popup />
+          <VdsBtn variant="primary" label="Сохранить" :loading="saving" @click="save" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -73,6 +73,7 @@
 </template>
 
 <script setup lang="ts">
+import VdsBtn from 'src/components/VdsBtn.vue';
 import VdsEmptyState from 'src/components/VdsEmptyState.vue';
 import VdsErrorState from 'src/components/VdsErrorState.vue';
 import { computed, onMounted, reactive, ref } from 'vue';

@@ -7,7 +7,7 @@
           <q-icon name="receipt_long" size="22px" color="primary" class="q-mr-sm" />
           Оформить заказ
         </div>
-        <q-btn flat round dense icon="close" :disable="loading" @click="onClose(false)" />
+        <VdsBtn variant="ghost" icon="close" :disable="loading" @click="onClose(false)" />
       </q-card-section>
 
       <q-separator />
@@ -128,14 +128,8 @@
       <q-separator />
 
       <q-card-actions align="right" class="q-pa-md">
-        <q-btn flat label="Отмена" :disable="loading" @click="onClose(false)" />
-        <q-btn
-          color="primary"
-          icon-right="send"
-          label="Отправить заказ"
-          :loading="loading"
-          @click="submit"
-        />
+        <VdsBtn variant="ghost" label="Отмена" :disable="loading" @click="onClose(false)" />
+        <VdsBtn variant="primary" icon-right="send" label="Отправить заказ" :loading="loading" @click="submit" />
       </q-card-actions>
 
     </q-card>
@@ -145,6 +139,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import { Notify } from 'quasar';
+import VdsBtn from 'src/components/VdsBtn.vue';
 import { useEstimateStore } from 'src/stores/estimate';
 import { formatPriceRub } from 'src/utils/format';
 import { useApi } from 'src/api/useApi';
