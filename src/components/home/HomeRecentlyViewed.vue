@@ -76,7 +76,7 @@ const PALETTES = [
 ];
 
 function placeholderStyle(id: number) {
-  const p = PALETTES[id % PALETTES.length] ?? PALETTES[0]!;
+  const p = PALETTES[id % PALETTES.length] ?? { bg: '#d6eeeb', stripe: 'rgba(80,180,168,0.40)' };
   return {
     backgroundColor: p.bg,
     backgroundImage: `repeating-linear-gradient(-45deg, ${p.stripe} 0px, ${p.stripe} 4px, transparent 4px, transparent 11px)`,

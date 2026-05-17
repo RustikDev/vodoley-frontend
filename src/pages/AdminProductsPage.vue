@@ -208,8 +208,7 @@ import VdsEmptyState from 'src/components/VdsEmptyState.vue';
 import VdsErrorState from 'src/components/VdsErrorState.vue';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 
-import { Dialog, Notify } from 'quasar';
-import type { QTableColumn } from 'quasar';
+import { Dialog, Notify, type QTableColumn } from 'quasar';
 import { useApi } from 'src/api/useApi';
 import { formatPriceRub } from 'src/utils/format';
 import type { Brand, Category, InventoryStatus, InventoryStatusOption, Product, ProductImage, Unit, UpdateProductRequest } from 'src/types/api';
@@ -427,7 +426,7 @@ async function save() {
         unitId: form.unitId ?? undefined,
         isActive: form.isActive,
       };
-      if (form.brandId != null) updatePayload.brandId = form.brandId;
+      if (form.brandId !== null && form.brandId !== undefined) updatePayload.brandId = form.brandId;
       await api.adminUpdateProduct(form.id, updatePayload);
 
       const origInventory = allRows.value.find((p) => p.id === form.id)?.inventory;
@@ -457,8 +456,8 @@ async function save() {
       };
 
       if (form.description && form.description.trim().length > 0) payload.description = form.description;
-      if (form.inventoryQuantity != null) payload.inventoryQuantity = form.inventoryQuantity;
-      if (form.brandId != null) payload.brandId = form.brandId;
+      if (form.inventoryQuantity !== null && form.inventoryQuantity !== undefined) payload.inventoryQuantity = form.inventoryQuantity;
+      if (form.brandId !== null && form.brandId !== undefined) payload.brandId = form.brandId;
 
       await api.adminCreateProductMultipart(payload);
     }

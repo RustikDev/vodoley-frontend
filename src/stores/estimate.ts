@@ -27,7 +27,7 @@ function safeLoad(): EstimateItem[] {
       .map((x) => x as Partial<EstimateItem>)
       .filter((x) => typeof x.productId === 'number' && typeof x.quantity === 'number')
       .map((x) => ({
-        productId: x.productId!,
+        productId: x.productId as number,
         name: String(x.name ?? ''),
         unit: String(x.unit ?? ''),
         price: Number(x.price ?? 0),

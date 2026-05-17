@@ -190,7 +190,7 @@ function osmMapLink(lat: number, lon: number) {
 }
 
 const activeStore = computed(() => {
-  const s = stores.value[selected.value] ?? stores.value[0]!;
+  const s = (stores.value[selected.value] ?? stores.value[0]) as Store;
   return {
     ...s,
     embedUrl: osmEmbedUrl(s.lat, s.lon),

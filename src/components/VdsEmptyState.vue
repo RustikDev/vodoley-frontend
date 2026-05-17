@@ -20,6 +20,7 @@ withDefaults(
   defineProps<{
     icon?: string;
     title: string;
+    // eslint-disable-next-line vue/require-default-prop
     description?: string;
   }>(),
   {

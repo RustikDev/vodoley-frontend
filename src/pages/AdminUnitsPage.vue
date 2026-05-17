@@ -76,9 +76,8 @@
 import VdsEmptyState from 'src/components/VdsEmptyState.vue';
 import VdsErrorState from 'src/components/VdsErrorState.vue';
 import { computed, onMounted, reactive, ref } from 'vue';
-import { Dialog, Notify } from 'quasar';
+import { Dialog, Notify, type QTableColumn } from 'quasar';
 import { useApi } from 'src/api/useApi';
-import type { QTableColumn } from 'quasar';
 import type { Unit } from 'src/types/api';
 
 const api = useApi();

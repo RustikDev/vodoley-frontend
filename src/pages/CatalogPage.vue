@@ -179,13 +179,13 @@ const sortOptions: Array<{ label: string; value: ProductSort }> = [
 
 function readNumber(v: unknown): number | null {
   const raw = Array.isArray(v) ? v[0] : v;
-  if (raw == null || raw === '') return null;
+  if (raw === null || raw === undefined || raw === '') return null;
   const n = Number(raw);
   return Number.isFinite(n) ? n : null;
 }
 
 function normalizeNumberInput(v: unknown): number | null {
-  if (v == null || v === '') return null;
+  if (v === null || v === undefined || v === '') return null;
   const n = typeof v === 'number' ? v : typeof v === 'string' ? Number(v.replace(',', '.')) : null;
   return Number.isFinite(n) ? n : null;
 }
@@ -235,11 +235,11 @@ const maxPage = computed(() => {
 function buildRouteQuery(): Record<string, string> {
   const q: Record<string, string> = {};
   if (ui.q) q.q = ui.q;
-  if (ui.categoryId != null) q.categoryId = String(ui.categoryId);
-  if (ui.categoryId != null && ui.includeChildren) q.includeChildren = 'true';
-  if (ui.unitId != null) q.unitId = String(ui.unitId);
-  if (ui.minPrice != null) q.minPrice = String(ui.minPrice);
-  if (ui.maxPrice != null) q.maxPrice = String(ui.maxPrice);
+  if (ui.categoryId !== null) q.categoryId = String(ui.categoryId);
+  if (ui.categoryId !== null && ui.includeChildren) q.includeChildren = 'true';
+  if (ui.unitId !== null) q.unitId = String(ui.unitId);
+  if (ui.minPrice !== null) q.minPrice = String(ui.minPrice);
+  if (ui.maxPrice !== null) q.maxPrice = String(ui.maxPrice);
   if (ui.inStock) q.inStock = 'true';
   if (ui.isHit) q.isHit = 'true';
   if (ui.sort) q.sort = String(ui.sort);
@@ -256,11 +256,11 @@ function buildApiQuery(): ProductListQuery {
   };
 
   if (ui.q) query.q = ui.q;
-  if (ui.categoryId != null) query.categoryId = ui.categoryId;
-  if (ui.categoryId != null && ui.includeChildren) query.includeChildren = true;
-  if (ui.unitId != null) query.unitId = ui.unitId;
-  if (ui.minPrice != null) query.minPrice = ui.minPrice;
-  if (ui.maxPrice != null) query.maxPrice = ui.maxPrice;
+  if (ui.categoryId !== null) query.categoryId = ui.categoryId;
+  if (ui.categoryId !== null && ui.includeChildren) query.includeChildren = true;
+  if (ui.unitId !== null) query.unitId = ui.unitId;
+  if (ui.minPrice !== null) query.minPrice = ui.minPrice;
+  if (ui.maxPrice !== null) query.maxPrice = ui.maxPrice;
   if (ui.inStock) query.inStock = true;
   if (ui.isHit) query.isHit = true;
 
@@ -288,7 +288,7 @@ function applyRoute() {
     ui.page = readNumber(route.query.page) ?? 1;
     ui.pageSize = readNumber(route.query.pageSize) ?? 12;
 
-    if (ui.categoryId == null) ui.includeChildren = false;
+    if (ui.categoryId === null) ui.includeChildren = false;
   } finally {
     applyingRoute = false;
   }

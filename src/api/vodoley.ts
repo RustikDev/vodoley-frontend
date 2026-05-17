@@ -138,14 +138,14 @@ export function createVodoleyApi(axios: AxiosInstance) {
       const form = new FormData();
       form.set('name', payload.name);
       form.set('slug', payload.slug);
-      if (payload.description != null) form.set('description', payload.description);
+      if (payload.description !== null && payload.description !== undefined) form.set('description', payload.description);
       form.set('price', String(payload.price));
       form.set('categoryId', String(payload.categoryId));
       form.set('unitId', String(payload.unitId));
-      if (payload.brandId != null) form.set('brandId', String(payload.brandId));
-      if (payload.isActive != null) form.set('isActive', String(payload.isActive));
-      if (payload.inventoryQuantity != null) form.set('inventoryQuantity', String(payload.inventoryQuantity));
-      if (payload.inventoryStatus != null) form.set('inventoryStatus', payload.inventoryStatus);
+      if (payload.brandId !== null && payload.brandId !== undefined) form.set('brandId', String(payload.brandId));
+      if (payload.isActive !== null && payload.isActive !== undefined) form.set('isActive', String(payload.isActive));
+      if (payload.inventoryQuantity !== null && payload.inventoryQuantity !== undefined) form.set('inventoryQuantity', String(payload.inventoryQuantity));
+      if (payload.inventoryStatus !== null && payload.inventoryStatus !== undefined) form.set('inventoryStatus', payload.inventoryStatus);
       (payload.images ?? []).forEach((f) => form.append('images', f));
 
       const { data } = await axios.post<Product>('/admin/products', form, {

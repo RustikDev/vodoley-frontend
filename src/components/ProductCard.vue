@@ -106,7 +106,7 @@ const PLACEHOLDER_PALETTES = [
 ];
 
 const placeholderStyle = computed(() => {
-  const p = PLACEHOLDER_PALETTES[props.product.id % PLACEHOLDER_PALETTES.length] ?? PLACEHOLDER_PALETTES[0]!;
+  const p = PLACEHOLDER_PALETTES[props.product.id % PLACEHOLDER_PALETTES.length] ?? { bg: '#d6eeeb', stripe: 'rgba(80,180,168,0.45)' };
   return {
     backgroundColor: p.bg,
     backgroundImage: `repeating-linear-gradient(-45deg, ${p.stripe} 0px, ${p.stripe} 4px, transparent 4px, transparent 11px)`,

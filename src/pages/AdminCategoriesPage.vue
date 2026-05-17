@@ -91,9 +91,8 @@
 import VdsEmptyState from 'src/components/VdsEmptyState.vue';
 import VdsErrorState from 'src/components/VdsErrorState.vue';
 import { computed, onMounted, reactive, ref } from 'vue';
-import { Dialog, Notify } from 'quasar';
+import { Dialog, Notify, type QTableColumn } from 'quasar';
 import { useApi } from 'src/api/useApi';
-import type { QTableColumn } from 'quasar';
 import type { Category, CreateCategoryRequest, UpdateCategoryRequest } from 'src/types/api';
 
 const api = useApi();
@@ -214,7 +213,7 @@ async function save() {
         sortOrder: form.sortOrder,
       };
 
-      if (form.parentId != null) payload.parentId = form.parentId;
+      if (form.parentId !== null && form.parentId !== undefined) payload.parentId = form.parentId;
 
       await api.adminUpdateCategory(form.id, payload);
     } else {
@@ -225,7 +224,7 @@ async function save() {
         sortOrder: form.sortOrder,
       };
 
-      if (form.parentId != null) payload.parentId = form.parentId;
+      if (form.parentId !== null && form.parentId !== undefined) payload.parentId = form.parentId;
 
       await api.adminCreateCategory(payload);
     }

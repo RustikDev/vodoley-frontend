@@ -260,7 +260,7 @@ async function loadProducts() {
       pageSize: PAGE_SIZE,
     };
     if (q) query.q = q;
-    if (categoryId != null) query.categoryId = categoryId;
+    if (categoryId !== null && categoryId !== undefined) query.categoryId = categoryId;
     if (inStock) query.inStock = inStock;
     if (sort) query.sort = sort;
     const res = await api.brandProducts(slug.value, query);

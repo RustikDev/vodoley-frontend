@@ -74,7 +74,7 @@ async function reload() {
 
 function onSelect(categoryId: number | null) {
   const query: Record<string, string> = {};
-  if (categoryId != null) query.categoryId = String(categoryId);
+  if (categoryId !== null) query.categoryId = String(categoryId);
   void router.push({ path: '/catalog', query });
 }
 

@@ -71,9 +71,8 @@
 import { ref } from 'vue';
 import { Notify } from 'quasar';
 import * as XLSX from 'xlsx';
-import { useEstimateStore } from 'src/stores/estimate';
+import { useEstimateStore, type EstimateItem } from 'src/stores/estimate';
 import { formatPriceRub } from 'src/utils/format';
-import type { EstimateItem } from 'src/stores/estimate';
 
 const store = useEstimateStore();
 const fileInput = ref<HTMLInputElement | null>(null);
