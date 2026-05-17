@@ -130,7 +130,7 @@
             <q-btn flat no-caps to="/"                     class="cnav-link">Главная</q-btn>
             <q-btn flat no-caps to="/catalog?sale=true"    class="cnav-link">Акции</q-btn>
             <q-btn flat no-caps to="/brands"               class="cnav-link">Бренды</q-btn>
-            <q-btn flat no-caps to="/about"                class="cnav-link">Доставка</q-btn>
+            <q-btn flat no-caps to="/delivery"             class="cnav-link">Доставка</q-btn>
             <q-btn flat no-caps to="/about"                class="cnav-link">О магазине</q-btn>
 
             <div class="cnav-spacer" />
