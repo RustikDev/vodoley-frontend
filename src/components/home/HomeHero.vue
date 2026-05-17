@@ -39,7 +39,7 @@
                 </div>
                 <h1 class="hero-slide__title">Инструменты и материалы для большой стройки</h1>
                 <p class="hero-slide__desc">
-                  Более 28&nbsp;000 наименований. Самовывоз за 30&nbsp;минут, доставка по Москве и
+                  Более 28&nbsp;000 наименований. Самовывоз за 30&nbsp;минут, доставка по Бахчисараю и
                   области от&nbsp;800&nbsp;₽.
                 </p>
                 <div class="hero-slide__actions">
@@ -63,7 +63,7 @@
                   <q-icon name="local_shipping" size="11px" />
                   БЫСТРАЯ ДОСТАВКА
                 </div>
-                <h1 class="hero-slide__title">Доставка по Москве от&nbsp;800&nbsp;₽</h1>
+                <h1 class="hero-slide__title">Доставка по Бахчисараю от&nbsp;800&nbsp;₽</h1>
                 <p class="hero-slide__desc">
                   Привезём на следующий день, если заказать до&nbsp;18:00. Работаем без выходных.
                 </p>

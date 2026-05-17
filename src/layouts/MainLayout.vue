@@ -23,7 +23,7 @@
               <span class="util-sep-pipe" />
               <span>Магазины&thinsp;·&thinsp;3</span>
               <span class="util-sep-pipe" />
-              <a href="tel:+78001000000" class="util-phone">+7 (800) 100-00-00</a>
+              <a href="tel:+79781000000" class="util-phone">+7 (978) 100-00-00</a>
             </div>
           </div>
         </div>
@@ -127,6 +127,7 @@
               <span class="catalog-main-btn__text">Каталог<br>товаров</span>
             </router-link>
 
+            <q-btn flat no-caps to="/"                     class="cnav-link">Главная</q-btn>
             <q-btn flat no-caps to="/catalog?sale=true"    class="cnav-link">Акции</q-btn>
             <q-btn flat no-caps to="/brands"               class="cnav-link">Бренды</q-btn>
             <q-btn flat no-caps to="/about"                class="cnav-link">Доставка</q-btn>
@@ -174,9 +175,9 @@
             <p class="footer-brand__desc">
               Строительный магазин в Бахчисарае. Инструменты, материалы и всё для ремонта.
             </p>
-            <a href="tel:+78001000000" class="footer-phone">
+            <a href="tel:+79781000000" class="footer-phone">
               <q-icon name="call" size="16px" />
-              +7 (800) 100-00-00
+              +7 (978) 100-00-00
             </a>
             <div class="footer-hours">
               <q-icon name="schedule" size="14px" />
@@ -209,7 +210,7 @@
           <div class="footer-col">
             <div class="footer-col__head">Контакты</div>
             <ul>
-              <li><a href="tel:+78001000000">+7 (800) 100-00-00</a></li>
+              <li><a href="tel:+79781000000">+7 (978) 100-00-00</a></li>
               <li><span>г. Бахчисарай</span></li>
               <li><span>Пн–Вс 8:00–18:00</span></li>
             </ul>
@@ -281,7 +282,6 @@ function goCategory(id: number | null) {
 const isOpenNow = computed(() => {
   const now = new Date();
 
-  // время по Москве
   const moscowHour = Number(
     new Intl.DateTimeFormat('ru-RU', {
       timeZone: 'Europe/Moscow',

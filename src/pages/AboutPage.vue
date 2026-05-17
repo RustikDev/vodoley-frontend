@@ -128,8 +128,8 @@ type Store = {
 };
 
 const contacts = {
-  phone: '+79780000000',
-  phoneDisplay: '+7 (978) 000-00-00',
+  phone: '+79781000000',
+  phoneDisplay: '+7 (978) 100-00-00',
   email: 'info@vodoley.ru',
   hours: 'Ежедневно 08:00–18:00',
 };
