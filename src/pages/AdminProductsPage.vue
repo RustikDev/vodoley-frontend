@@ -12,18 +12,36 @@
       <q-input v-model.trim="filters.q" dense outlined clearable placeholder="Поиск по названию" class="filter-search" />
       <q-select
         v-model="filters.categoryId"
-        dense outlined emit-value map-options clearable
+        dense outlined emit-value map-options
         label="Категория"
         class="filter-select"
         :options="[{ label: 'Все категории', value: null }, ...categoryOptions]"
-      />
+      >
+        <template #append>
+          <q-icon
+            name="cancel"
+            class="cursor-pointer"
+            :style="filters.categoryId === null ? 'visibility:hidden' : ''"
+            @click.stop.prevent="filters.categoryId = null"
+          />
+        </template>
+      </q-select>
       <q-select
         v-model="filters.brandId"
-        dense outlined emit-value map-options clearable
+        dense outlined emit-value map-options
         label="Бренд"
         class="filter-select"
         :options="[{ label: 'Все бренды', value: null }, ...brandOptions.filter(o => o.value !== null)]"
-      />
+      >
+        <template #append>
+          <q-icon
+            name="cancel"
+            class="cursor-pointer"
+            :style="filters.brandId === null ? 'visibility:hidden' : ''"
+            @click.stop.prevent="filters.brandId = null"
+          />
+        </template>
+      </q-select>
       <q-toggle v-model="filters.isActive" label="Только активные" />
       <q-toggle v-model="filters.isHit" label="Только хиты" />
       <div class="text-caption text-grey-6">Найдено: {{ rows.length }}</div>
@@ -140,10 +158,18 @@
                 outlined
                 emit-value
                 map-options
-                clearable
                 label="Бренд"
                 :options="brandOptions"
-              />
+              >
+                <template #append>
+                  <q-icon
+                    name="cancel"
+                    class="cursor-pointer"
+                    :style="form.brandId === null ? 'visibility:hidden' : ''"
+                    @click.stop.prevent="form.brandId = null"
+                  />
+                </template>
+              </q-select>
             </div>
             <div class="col-12 col-md-4">
               <q-toggle v-model="form.isActive" label="Активен" />

@@ -2,7 +2,7 @@
   <div class="vds-card q-pa-md">
     <div class="row items-center justify-between q-mb-sm">
       <div class="text-subtitle1 text-weight-bold">{{ title }}</div>
-      <q-btn flat dense no-caps color="primary" label="В каталог" :to="to" />
+      <HomeSectionLink :to="to" label="В каталог" />
     </div>
 
     <div v-if="loading" class="row q-col-gutter-md no-wrap" style="overflow-x:auto">
@@ -43,6 +43,7 @@
 import { onMounted, ref } from 'vue';
 import { useApi } from 'src/api/useApi';
 import type { Product, ProductListQuery } from 'src/types/api';
+import HomeSectionLink from 'src/components/home/HomeSectionLink.vue';
 import ProductCard from 'src/components/ProductCard.vue';
 import VdsEmptyState from 'src/components/VdsEmptyState.vue';
 import VdsErrorState from 'src/components/VdsErrorState.vue';

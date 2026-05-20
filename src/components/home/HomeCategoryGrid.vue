@@ -7,7 +7,7 @@
           <h2 class="cat-section__title">Категории</h2>
           <div v-if="!loading && totalCount > 0" class="cat-section__sub">{{ totalCount }} разделов</div>
         </div>
-        <router-link to="/categories" class="cat-section__all">Все категории →</router-link>
+        <HomeSectionLink to="/categories" label="Все категории" />
       </div>
 
       <div v-if="loading" class="cat-grid">
@@ -43,6 +43,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useApi } from 'src/api/useApi';
+import HomeSectionLink from 'src/components/home/HomeSectionLink.vue';
 import type { CategoryNode } from 'src/types/api';
 
 const router = useRouter();
@@ -119,14 +120,6 @@ function go(cat: { id: number; slug: string }) {
   font-weight: 500;
 }
 
-.cat-section__all {
-  font-size: 14.5px;
-  font-weight: 700;
-  color: var(--vds-color-primary);
-  text-decoration: none;
-  white-space: nowrap;
-  &:hover { opacity: 0.75; }
-}
 
 /* Grid */
 .cat-grid {

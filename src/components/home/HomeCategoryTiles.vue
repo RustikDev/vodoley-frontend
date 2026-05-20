@@ -2,7 +2,7 @@
   <div class="vds-card q-pa-md">
     <div class="row items-center justify-between q-mb-sm">
       <div class="text-subtitle1 text-weight-bold">Категории</div>
-      <q-btn flat dense no-caps color="primary" label="Все" to="/categories" />
+      <HomeSectionLink to="/categories" label="Все категории" />
     </div>
 
     <div v-if="loading" class="row q-col-gutter-md">
@@ -28,6 +28,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useApi } from 'src/api/useApi';
+import HomeSectionLink from 'src/components/home/HomeSectionLink.vue';
 import type { CategoryNode } from 'src/types/api';
 
 const router = useRouter();

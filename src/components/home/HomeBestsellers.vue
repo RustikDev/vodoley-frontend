@@ -19,7 +19,7 @@
               {{ tab.label }}
             </button>
           </div>
-          <router-link :to="to" class="bs-catalog-link">В каталог →</router-link>
+          <HomeSectionLink :to="to" label="В каталог" />
         </div>
       </div>
 
@@ -49,6 +49,7 @@
 import { onMounted, ref } from 'vue';
 import { useApi } from 'src/api/useApi';
 import type { Product, ProductListQuery } from 'src/types/api';
+import HomeSectionLink from 'src/components/home/HomeSectionLink.vue';
 import ProductCard from 'src/components/ProductCard.vue';
 import VdsErrorState from 'src/components/VdsErrorState.vue';
 
@@ -159,20 +160,6 @@ onMounted(() => { void load(); });
   }
 }
 
-/* Catalog link */
-.bs-catalog-link {
-  font-size: 14px;
-  font-weight: 700;
-  color: #2557e6;
-  text-decoration: none;
-  white-space: nowrap;
-  border: 1.5px solid #d4daf0;
-  border-radius: 8px;
-  padding: 7px 16px;
-  transition: border-color 0.15s, background 0.15s;
-
-  &:hover { border-color: #2557e6; background: #f0f4ff; }
-}
 
 /* Grid */
 .bs-grid {

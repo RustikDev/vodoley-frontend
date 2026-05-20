@@ -68,12 +68,20 @@
           <q-select
             v-model="form.parentId"
             outlined
-            clearable
             emit-value
             map-options
             label="Родитель"
             :options="parentOptions"
-          />
+          >
+            <template #append>
+              <q-icon
+                name="cancel"
+                class="cursor-pointer"
+                :style="form.parentId === null ? 'visibility:hidden' : ''"
+                @click.stop.prevent="form.parentId = null"
+              />
+            </template>
+          </q-select>
           <q-toggle v-model="form.isActive" label="Активна" />
           <q-input v-model.number="form.sortOrder" outlined type="number" label="Порядок" />
         </q-card-section>

@@ -26,10 +26,18 @@
           outlined
           emit-value
           map-options
-          clearable
           label="Ед. изм."
           :options="unitOptions"
-        />
+        >
+          <template #append>
+            <q-icon
+              name="cancel"
+              class="cursor-pointer"
+              :style="ui.unitId === null ? 'visibility:hidden' : ''"
+              @click.stop.prevent="ui.unitId = null"
+            />
+          </template>
+        </q-select>
       </div>
 
       <div class="col-12 col-md-2">

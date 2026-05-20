@@ -17,7 +17,7 @@
         <q-icon name="history" size="36px" class="rv-empty__icon" />
         <div class="rv-empty__text">История просмотров пуста</div>
         <div class="rv-empty__sub">Здесь появятся товары, которые вы открывали</div>
-        <router-link to="/catalog" class="rv-empty__link">Перейти в каталог →</router-link>
+        <HomeSectionLink to="/catalog" label="Перейти в каталог" />
       </div>
 
       <div v-else class="rv-grid">
@@ -61,6 +61,7 @@ import { useRecentlyViewedStore } from 'src/stores/recentlyViewed';
 import { useApi } from 'src/api/useApi';
 import { formatPriceRub } from 'src/utils/format';
 import type { Product } from 'src/types/api';
+import HomeSectionLink from 'src/components/home/HomeSectionLink.vue';
 
 const router = useRouter();
 const store = useRecentlyViewedStore();
@@ -119,15 +120,22 @@ function imageUrl(product: Product): string | null {
 }
 
 .rv-clear {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--vds-color-primary);
-  background: none;
-  border: none;
+  font-family: 'Manrope', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #d94040;
+  background: transparent;
+  border: 1.5px solid #f5c5c5;
+  border-radius: 20px;
+  padding: 8px 16px;
   cursor: pointer;
-  padding: 0;
   white-space: nowrap;
-  &:hover { opacity: 0.7; }
+  transition: background 0.18s, border-color 0.18s;
+}
+
+.rv-clear:hover {
+  background: #fff0f0;
+  border-color: #d94040;
 }
 
 /* Empty state */
@@ -158,14 +166,6 @@ function imageUrl(product: Product): string | null {
   font-weight: 500;
 }
 
-.rv-empty__link {
-  margin-top: 8px;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--vds-color-primary);
-  text-decoration: none;
-  &:hover { opacity: 0.75; }
-}
 
 /* Grid */
 .rv-grid {
