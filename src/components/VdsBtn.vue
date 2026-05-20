@@ -22,6 +22,7 @@ import type { RouteLocationRaw } from 'vue-router';
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'danger-ghost';
 type BtnSize = 'sm' | 'md' | 'lg';
 
+/* eslint-disable vue/require-default-prop */
 const props = withDefaults(defineProps<{
   variant?: Variant;
   size?: BtnSize;
@@ -40,6 +41,7 @@ const props = withDefaults(defineProps<{
   size: 'md',
   type: 'button',
 });
+/* eslint-enable vue/require-default-prop */
 
 const VARIANT_PROPS: Record<Variant, Record<string, unknown>> = {
   'primary':      { unelevated: true,  color: 'primary'  },
