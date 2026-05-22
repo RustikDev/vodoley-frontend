@@ -127,7 +127,19 @@
 
       <q-separator />
 
-      <q-card-actions align="right" class="q-pa-md">
+      <q-card-section class="q-pt-sm q-pb-xs q-px-md">
+        <q-checkbox
+          v-model="form.consent"
+          @update:model-value="errors.consent = ''"
+        >
+          <span class="order-consent-label">
+            Оформляя заказ, я даю согласие на хранение и обработку персональных данных
+          </span>
+        </q-checkbox>
+        <div v-if="errors.consent" class="order-consent-error">{{ errors.consent }}</div>
+      </q-card-section>
+
+      <q-card-actions align="right" class="q-pa-md q-pt-xs">
         <VdsBtn variant="ghost" label="Отмена" :disable="loading" @click="onClose(false)" />
         <VdsBtn variant="primary" icon-right="send" label="Отправить заказ" :loading="loading" @click="submit" />
       </q-card-actions>
@@ -157,6 +169,7 @@ const form = reactive({
   phone: '',
   delivery: false,
   address: '',
+  consent: false,
 });
 
 const errors = reactive({
@@ -164,6 +177,7 @@ const errors = reactive({
   lastName: '',
   phone: '',
   address: '',
+  consent: '',
 });
 
 function validate(): boolean {
@@ -171,7 +185,8 @@ function validate(): boolean {
   errors.lastName  = form.lastName.trim()  ? '' : 'Введите фамилию';
   errors.phone     = form.phone.trim()     ? '' : 'Введите номер телефона';
   errors.address   = (form.delivery && !form.address.trim()) ? 'Введите адрес доставки' : '';
-  return !errors.firstName && !errors.lastName && !errors.phone && !errors.address;
+  errors.consent   = form.consent ? '' : 'Необходимо дать согласие на обработку персональных данных';
+  return !errors.firstName && !errors.lastName && !errors.phone && !errors.address && !errors.consent;
 }
 
 function onClose(v: boolean) {
@@ -263,6 +278,19 @@ async function submit() {
     color: var(--vds-color-ink);
     font-size: 17px;
   }
+}
+
+.order-consent-label {
+  font-size: 13px;
+  color: var(--vds-color-ink-2);
+  line-height: 1.4;
+}
+
+.order-consent-error {
+  font-size: 12px;
+  color: var(--q-negative);
+  margin-top: 4px;
+  margin-left: 36px;
 }
 
 /* Delivery toggle */
