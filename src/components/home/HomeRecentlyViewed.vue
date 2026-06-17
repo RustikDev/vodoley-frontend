@@ -246,8 +246,24 @@ function imageUrl(product: Product): string | null {
 }
 
 @media (max-width: 767px) {
-  .rv-section { padding: 32px 0 40px; }
-  .rv-grid { grid-template-columns: repeat(2, 1fr); }
+  .rv-section { padding: 28px 0 36px; }
+
+  /* Заголовок и кнопка «Очистить» — в столбец на узких экранах */
+  .rv-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .rv-title { font-size: 22px; }
+
+  .rv-clear {
+    font-size: 12.5px;
+    padding: 6px 14px;
+  }
+
+  .rv-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {

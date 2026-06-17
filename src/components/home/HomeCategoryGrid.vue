@@ -224,10 +224,31 @@ function go(cat: { id: number; slug: string }) {
 }
 
 @media (max-width: 767px) {
-  .cat-section { padding: 32px 0 24px; }
-  .cat-grid { grid-template-columns: repeat(2, 1fr); }
+  .cat-section { padding: 28px 0 20px; }
+  .cat-section__title { font-size: 22px; }
+  .cat-section__head { margin-bottom: 16px; }
+  .cat-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .cat-card--featured { grid-column: span 2; }
-  .cat-card { height: 130px; }
+  .cat-card { height: 120px; }
+
+  /* Убираем декор — на узких карточках только мешает */
+  .cat-card__deco { display: none; }
+
+  /* Стрелка — в правый верхний угол, не в поток */
+  .cat-card__arrow {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Текст теперь занимает всю ширину карточки */
+  .cat-card__bottom {
+    right: 8px;
+  }
+
+  .cat-card__name { font-size: 13px; }
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {

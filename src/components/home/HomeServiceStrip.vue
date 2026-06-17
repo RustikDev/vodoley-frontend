@@ -52,32 +52,31 @@ const services = [
   margin-top: 22px;
 
   @media (max-width: 1023px) {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 767px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 16px;
   }
 }
 
 .service-item {
-    display: grid;
-    grid-template-columns: 44px 1fr;
-    gap: 14px;
-    align-items: center;
-    background: #fff;
-    border: 1px solid var(--vds-line);
-    border-radius: 14px;
-    padding: 14px 16px;
-    transition: border-color .15s, transform .12s;
-
-  @media (max-width: 1023px) {
-    &:nth-child(2n) {
-      border-right: none;
-    }
-    &:nth-child(n + 3) {
-      border-top: 1px solid var(--vds-color-border);
-    }
-  }
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  background: #fff;
+  border: 1px solid var(--vds-line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  min-width: 0;
+  transition: border-color .15s, transform .12s;
 
   @media (max-width: 767px) {
-    padding: 14px 16px;
+    padding: 12px 14px;
+    gap: 10px;
   }
 }
 

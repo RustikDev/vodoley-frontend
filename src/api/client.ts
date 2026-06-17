@@ -10,6 +10,9 @@ export function createApiClient(opts: {
   const instance = axios.create({
     baseURL: opts.baseURL,
     withCredentials: true,
+    headers: {
+      'ngrok-skip-browser-warning': 'true',
+    },
   });
 
   instance.interceptors.request.use((req) => {

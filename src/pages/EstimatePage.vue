@@ -54,20 +54,20 @@
 
       <q-separator />
 
-      <q-card-section class="row items-center justify-between">
+      <q-card-section class="est-actions">
         <div class="text-caption text-grey-7">Экспорт/импорт</div>
-        <div class="row q-gutter-sm">
-          <VdsBtn variant="danger-ghost" icon="delete_sweep" label="Очистить" @click="store.clear" />
-          <VdsBtn variant="primary" icon="download" label="Экспорт XLSX" @click="exportXlsx" />
-          <VdsBtn variant="secondary" icon="upload" label="Импорт XLSX" @click="pickFile" />
+        <div class="est-btns">
+          <VdsBtn variant="danger-ghost" icon="delete_sweep" label="Очистить" class="est-btn" @click="store.clear" />
+          <VdsBtn variant="primary" icon="download" label="Экспорт XLSX" class="est-btn" @click="exportXlsx" />
+          <VdsBtn variant="secondary" icon="upload" label="Импорт XLSX" class="est-btn" @click="pickFile" />
           <input ref="fileInput" type="file" accept=".xlsx" class="hidden" @change="onFile" />
         </div>
       </q-card-section>
 
       <q-separator />
 
-      <q-card-section class="row justify-end">
-        <VdsBtn variant="primary" icon-right="send" label="Сформировать заказ" @click="orderDialog = true" />
+      <q-card-section class="est-order-section">
+        <VdsBtn variant="primary" icon-right="send" label="Сформировать заказ" class="est-btn" @click="orderDialog = true" />
       </q-card-section>
     </q-card>
 
@@ -174,4 +174,50 @@ async function onFile(e: Event) {
   }
 }
 </script>
+
+<style scoped lang="scss">
+/* ── Действия (экспорт/импорт + очистить) ── */
+.est-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.est-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ── Кнопка «Сформировать заказ» — по правому краю на десктопе ── */
+.est-order-section {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ── Мобильная адаптация ── */
+@media (max-width: 767px) {
+  .est-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .est-btns {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Все кнопки тянутся на всю ширину */
+  .est-btns :deep(.q-btn),
+  .est-order-section :deep(.q-btn) {
+    width: 100%;
+  }
+
+  .est-order-section {
+    justify-content: stretch;
+  }
+}
+</style>
 

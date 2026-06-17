@@ -178,11 +178,18 @@ onMounted(() => { void load(); });
 }
 
 @media (max-width: 767px) {
-  .bs-section { padding: 32px 0; }
+  .bs-section { padding: 28px 0; }
   .bs-head { flex-direction: column; align-items: flex-start; gap: 12px; }
-  .bs-controls { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .bs-title { font-size: 22px; }
+  .bs-sub { font-size: 13px; }
+  .bs-controls { width: 100%; overflow: visible; }
+  .bs-controls .home-section-link { display: none; }
   .bs-tabs { flex-shrink: 0; }
+  .bs-tab { padding: 6px 13px; font-size: 13px; }
   .bs-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+
+  /* На мобильном показываем только 4 карточки (2×2) */
+  .bs-grid > *:nth-child(n+5) { display: none; }
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {

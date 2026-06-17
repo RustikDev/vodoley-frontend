@@ -21,7 +21,12 @@ a {
   margin: 0 auto;
   padding-left: var(--vds-space-6);
   padding-right: var(--vds-space-6);
+  /* width фиксирован только на очень широких экранах; везде ниже — 100% */
   width: var(--vds-container);
+
+  @media (max-width: 1280px) {
+    width: 100%;
+  }
 
   @media (max-width: 767px) {
     padding-left: 16px;
@@ -247,6 +252,18 @@ a {
 /* ── Home page ── */
 .vds-home-page {
   padding: 0 !important;
+
+  /* Отступ снизу для мобильной нижней навигации */
+  @media (max-width: 767px) {
+    padding-bottom: 72px !important;
+  }
+}
+
+/* Для остальных страниц — тоже добавляем отступ под нижнюю навигацию */
+@media (max-width: 767px) {
+  .q-page:not(.vds-home-page) {
+    padding-bottom: 72px;
+  }
 }
 
 /* ── Section spacing ── */

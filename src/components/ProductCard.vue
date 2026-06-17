@@ -353,9 +353,29 @@ const stockQty = computed(() => {
 }
 
 @media (max-width: 767px) {
+  /* Тело карточки — меньше padding */
+  .pcard__body {
+    padding: 10px 12px 12px;
+    gap: 4px;
+  }
+
+  .pcard__name { font-size: 13px; }
+
+  /* Цена меньше, чтобы помещалась рядом с кнопкой */
+  .pcard__price { font-size: 16px; letter-spacing: -0.2px; }
+  .pcard__unit  { font-size: 11px; }
+
+  /* price-row не должен вытеснять кнопку */
+  .pcard__price-row { flex-shrink: 1; min-width: 0; }
+
+  /* Кнопка компактнее */
   .pcard__estimate-btn {
     opacity: 1;
     transform: none;
+    padding: 5px 8px;
+    font-size: 11.5px;
+    border-radius: 6px;
+    flex-shrink: 0;
   }
 }
 </style>

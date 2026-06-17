@@ -117,6 +117,25 @@
             </div>
 
           </div>
+
+          <!-- Мобильная строка поиска (скрыта на desktop) -->
+          <div class="mobile-search-wrap">
+            <div class="search-bar" :class="{ 'search-bar--focused': searchFocused }">
+              <input
+                v-model="searchText"
+                type="text"
+                class="search-input"
+                placeholder="Поиск товаров..."
+                @focus="searchFocused = true"
+                @blur="searchFocused = false"
+                @keyup.enter="applySearch"
+              />
+              <button class="search-btn" @click="applySearch">
+                <q-icon name="search" size="18px" />
+              </button>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -159,6 +178,32 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    <!-- Мобильная нижняя панель навигации -->
+    <nav class="mobile-bottom-nav">
+      <router-link to="/" class="mob-nav-item">
+        <q-icon name="home" size="22px" />
+        <span>Главная</span>
+      </router-link>
+      <router-link to="/categories" class="mob-nav-item">
+        <q-icon name="view_list" size="22px" />
+        <span>Каталог</span>
+      </router-link>
+      <router-link to="/estimate" class="mob-nav-item">
+        <div class="mob-nav-icon-wrap">
+          <q-icon name="description" size="22px" />
+          <span v-if="estimate.count" class="mob-nav-badge">{{ estimate.count }}</span>
+        </div>
+        <span>Смета</span>
+      </router-link>
+      <router-link to="/favorites" class="mob-nav-item">
+        <div class="mob-nav-icon-wrap">
+          <q-icon name="favorite_border" size="22px" />
+          <span v-if="favorites.count" class="mob-nav-badge">{{ favorites.count }}</span>
+        </div>
+        <span>Избранное</span>
+      </router-link>
+    </nav>
 
     <!-- Footer -->
     <footer class="site-footer">
@@ -308,39 +353,6 @@ const workStatusText = computed(() => {
 .vds-header-wrap {
   background: transparent !important;
   box-shadow: none !important;
-}
-
-@media (max-width: 767px) {
-  .util-bar    { display: none; }
-  .popular-strip { display: none; }
-
-  .header-grid {
-    grid-template-columns: 1fr auto !important;
-    gap: 0 !important;
-    flex-wrap: wrap;
-  }
-
-  .search-bar { display: none; }
-
-  .site-header {
-    height: auto !important;
-    padding: 10px 0;
-  }
-
-  .brand-sub { display: none; }
-
-  .header-actions { gap: 4px; }
-
-  .hdr-action-btn span { display: none; }
-  .hdr-action-btn { padding: 6px 8px !important; }
-
-  .catalog-nav { display: none; }
-
-  .footer-grid {
-    grid-template-columns: 1fr 1fr !important;
-    gap: 32px 20px !important;
-    padding: 36px 0 28px !important;
-  }
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
@@ -763,5 +775,181 @@ const workStatusText = computed(() => {
 
 .util-dot--closed {
   background: #ef4444;
+}
+
+/* ── Desktop-only: скрыты на мобильном ───────────────────── */
+.mobile-search-wrap { display: none; }
+.mobile-bottom-nav  { display: none; }
+
+/* ════════════════════════════════════════════════════════════
+   МОБИЛЬНЫЕ СТИЛИ (≤ 767px)
+   Размещены ПОСЛЕ базовых стилей — именно так правила
+   медиа-запроса правильно перекрывают базовые объявления.
+   ════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+
+  /* ── Скрываем desktop-only блоки ── */
+  .util-bar      { display: none; }
+  .popular-strip { display: none; }
+  .catalog-nav   { display: none; }
+  .brand-sub     { display: none; }
+
+  /* ── Основной хедер ── */
+  .site-header {
+    height: auto;
+    padding: 10px 0 0;
+  }
+
+  .header-grid {
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+  }
+
+  /* Скрываем поиск внутри header-grid — он будет ниже отдельной строкой */
+  .header-grid .search-bar { display: none; }
+
+  /* Кнопки действий: только иконки, без подписей */
+  .header-actions { gap: 2px; }
+
+  .hdr-action-btn {
+    padding: 6px 8px;
+    span { display: none; }
+  }
+
+  .hdr-smeta-btn {
+    padding: 8px 14px;
+    font-size: 13px;
+    gap: 5px;
+  }
+
+  /* ── Мобильный поиск (вторая строка шапки) ── */
+  .mobile-search-wrap {
+    display: block;
+    padding-top: 8px;
+    padding-bottom: 12px;
+
+    .search-bar {
+      height: 44px;
+      border-radius: 10px;
+    }
+
+    /* Убираем выбор категории — только поле + иконка поиска */
+    .search-cat,
+    .search-divider {
+      display: none;
+    }
+
+    .search-input { padding: 0 12px; }
+
+    .search-btn {
+      padding: 0 18px;
+      gap: 0;
+      span { display: none; }
+    }
+  }
+
+  /* ── Футер ── */
+  .site-footer {
+    padding-bottom: calc(58px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 24px 16px !important;
+    padding: 32px 0 20px !important;
+  }
+
+  .footer-phone {
+    font-size: 13px !important;
+    white-space: nowrap;
+  }
+
+  .footer-hours {
+    font-size: 11.5px;
+  }
+
+  .footer-brand__desc {
+    font-size: 12px;
+  }
+
+  .footer-col a,
+  .footer-col span {
+    font-size: 12.5px;
+  }
+
+  .footer-col__head {
+    font-size: 10px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 14px 0 10px;
+  }
+
+  .footer-bottom__badges {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .footer-badge {
+    font-size: 11px;
+  }
+
+  /* ── Нижняя навигационная панель ── */
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2000;
+    background: #fff;
+    border-top: 1px solid #e8edf8;
+    box-shadow: 0 -2px 12px rgba(14, 20, 48, 0.08);
+    height: 58px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .mob-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    color: #8c94b3;
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 600;
+    transition: color 0.15s;
+
+    &.router-link-exact-active { color: #2557e6; }
+  }
+
+  .mob-nav-icon-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mob-nav-badge {
+    position: absolute;
+    top: -4px;
+    right: -8px;
+    background: #dc2626;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    border-radius: 10px;
+    padding: 1px 4px;
+    min-width: 14px;
+    text-align: center;
+    line-height: 12px;
+    pointer-events: none;
+  }
 }
 </style>

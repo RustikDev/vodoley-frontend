@@ -570,19 +570,31 @@ onMounted(async () => {
     padding: 12px 0 0;
   }
 
+  /* Сбрасываем фиксированную высоту — на мобильном контент определяет размер */
+  .hero-banner {
+    height: auto;
+  }
+
   .hero-carousel {
-    min-height: 280px !important;
+    min-height: 260px !important;
+    height: auto !important;
   }
 
   .hero-slide__content {
-    padding: 24px 20px 40px;
+    padding: 22px 20px 36px;
   }
 
   .hero-slide__title {
-    font-size: 24px;
+    font-size: 22px;
+    margin-bottom: 10px;
   }
   .hero-slide__desc {
     font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .hero-badge {
+    margin-bottom: 14px;
   }
 
   .hero-btn-primary {
@@ -594,21 +606,31 @@ onMounted(async () => {
     padding: 10px 16px !important;
   }
 
-  .hero-badges {
-    gap: 14px;
+  .hero-dots {
+    left: 20px;
+    bottom: 12px;
   }
 
+  /* Декоративный элемент перекрывает текст на узких экранах — скрываем */
+  .hero-slide__deco { display: none; }
+
+  /* Боковые карточки — в строку под каруселью */
   .hero-side {
     flex-direction: row;
     padding: 10px;
     gap: 10px;
+    height: auto; /* Сброс фиксированной высоты 430px */
   }
 
   .side-card {
-    padding: 16px 14px;
+    padding: 14px 12px;
+    min-height: 110px;
   }
   .side-card__title {
-    font-size: 15px;
+    font-size: 14px;
+  }
+  .side-card__desc {
+    font-size: 12px;
   }
   .side-card__spacer {
     display: none;
